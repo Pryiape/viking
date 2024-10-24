@@ -71,6 +71,10 @@ $(function() {
             $('#error-register-terms').text("")
             var res = emailExistJs(Email);
             (res!="exist") ? $('#form-register').submit(): $ ('#Email').addClass('is-invalid');$('#Email').removeClass('is-valid');$('#error-register-Email').text("cette adresse e-mail est deja utiliser!");
+            /**
+             * condition ternaire
+             * (condition) ? vraie : fausse ;
+             */
 
         }else
         {
