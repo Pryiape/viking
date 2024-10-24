@@ -1,3 +1,7 @@
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="#">
@@ -18,32 +22,31 @@
                 </li>
             </ul>
             <div class="btn-group">
-                @guest
-                <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Connexion
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{route('login')}}">Login</a></li>
-                    <li><a class="dropdown-item" href="{{route('register')}}">Register</a></li>
-                </ul>
-            @endguest
-            @auth
-                <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ Auth::user()->username }}
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{route('app_profile')}}">Profile</a></li>
-                    <li><a class="dropdown-item" href="{{route('app_builds')}}">Builds</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form action="{{ route('app_logout') }}" method="post">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Deconnexion</button>
-                        </form>
-                    </li>
-                </ul>
-            @endauth
-            </div>
-        </div>
+          @guest
+        <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Connexion
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ route('login') }}">Login</a></li>
+            <li><a class="dropdown-item" href="{{ route('register') }}">Register</a></li>
+        </ul>
+         @endguest
+          @auth
+        <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ Auth::user()->username }}
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ route('app_profile') }}">Profile</a></li>
+            <li><a class="dropdown-item" href="{{ route('app_builds') }}">Builds</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form action="{{ route('app_logout') }}" method="post">
+                    @csrf
+                    <button type="submit" class="dropdown-item">Deconnexion</button>
+                </form>
+            </li>
+        </ul>
+          @endauth
+</div>
     </div>
 </nav>
