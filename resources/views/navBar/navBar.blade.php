@@ -36,7 +36,7 @@
                     <li><a class="dropdown-item" href="{{route('app_builds')}}">Builds</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <form action="{{ route('logout') }}" method="post">
+                        <form action="{{ route('app_logout') }}" method="post">
                             @csrf
                             <button type="submit" class="dropdown-item">Deconnexion</button>
                         </form>

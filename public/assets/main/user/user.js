@@ -36,7 +36,7 @@ $(function() {
         {
             $('#Email').removeClass('is-valid');
             $('#Email').addClass('is-invalid');
-            $('#error-register-Email').text("le nom d'utilisateur n'est pas valide!")
+            $('#error-register-Email').text("l'Email n'est pas valide!")
         }
        var Password = $('#Password').val();
 
@@ -69,6 +69,9 @@ $(function() {
         {
             $('#terms').addRemove('is-invalid');
             $('#error-register-terms').text("")
+            var res = emailExistJs(Email);
+            (res!="exist") ? $('#form-register').submit(): $ ('#Email').addClass('is-invalid');$('#Email').removeClass('is-valid');$('#error-register-Email').text("cette adresse e-mail est deja utiliser!");
+
         }else
         {
             $('#terms').addClass('is-invalid');
@@ -91,3 +94,20 @@ $(function() {
         });
     });
 });
+function emailExistJs(Email){
+    var url = $('#Email').attr('url-existEmail');
+    var token = $('#Email').attr('token');
+    var response ="";
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+            Email: Email, '_token': token},
+        success: function(result){
+
+            response = result.response;
+        },
+        async:false
+    });
+    return response;
+}

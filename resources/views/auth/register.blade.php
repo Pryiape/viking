@@ -15,7 +15,7 @@
             </div>
             <div class="col-md-6 mx-auto mt-3">
                 <label for="inputEmail4" class="form-label">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" name="email" required>
+                <input type="email" class="form-control" id="inputEmail4" name="email" required autocomplete="email" url-existEmail="{{route('app_existEmail'}}"token="{{csrf_token()}}">
             </div>
             <div class="col-md-6 mx-auto mt-3">
                 <label for="inputPassword4" class="form-label">Mot de passe</label>
