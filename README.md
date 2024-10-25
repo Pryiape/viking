@@ -5,7 +5,7 @@ Composition des Langages
 CSS: 81%
 PHP: 14.5%
 Blade: 3.1%
-JavaScript: 1.4%
+JavaScript: 1.4%    
 Installation
 Pour installer le projet Viking, suivez les étapes suivantes :
 
@@ -29,6 +29,7 @@ ORM de base de données intuitif et expressif
 Migrations de schéma agnostiques de la base de données
 Traitement des tâches en arrière-plan robuste
 Diffusion d'événements en temps réel
+<Insérez ici l'arborescence générée par la commande `tree -L 2`>
 Contribuer
 Merci de considérer une contribution au projet Viking ! Vous pouvez trouver le guide de contribution dans la documentation du projet.
 
