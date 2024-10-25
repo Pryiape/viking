@@ -13,5 +13,10 @@ Route::match(['get','post'],'/dashboard', [HomeController::class , 'dashboard'])
 
 Route::get('/logout', [LoginController::class , 'logout'])->name(('app_logout'));
 Route::post('/existEmail', [LoginController::class , 'existEmail'])->name(('app_existEmail'));
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::middleware('web')->group(function () {
+    // Vos routes ici...
+});
+
 /*Route::match(['get','post'],'/login', [LoginController::class , 'login'])->name(('app_login'));
 Route::match(['get','post'],'/register', [LoginController::class , 'register'])->name(('app_register'));*/
