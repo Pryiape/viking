@@ -18,5 +18,7 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+$app->useEnvironmentPath(__DIR__.'/../');
+$app->loadEnvironmentFrom('.env');
 
 return $app;

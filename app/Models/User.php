@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
+
 
 class User extends Authenticatable
 {
@@ -44,4 +46,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($user) {
+        Log::info('Tentative de création d\'un utilisateur', $user->toArray());
+    });
+}
+
 }

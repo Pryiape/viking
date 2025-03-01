@@ -51,10 +51,13 @@
                     <h5 class="modal-title" id="termsModalLabel">Termes d'utilisation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <p>Les termes d'utilisation incluent les règles et les politiques que vous devez suivre pour utiliser ce site.</p>
-                    <!-- Ajoutez ici le texte complet des termes d'utilisation -->
+                    
+                    <!-- Ajout du GIF -->
+                    <img src="{{ asset('jdg-joueur-du-grenier.gif') }}" alt="GIF animé" class="img-fluid">
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                 </div>
