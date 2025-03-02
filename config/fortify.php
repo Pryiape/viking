@@ -116,7 +116,7 @@ return [
     */
 
     'limiters' => [
-        'login' => 'login',
+        'login' => 'login', // Ensure this is defined correctly
         'two-factor' => 'two-factor',
     ],
 

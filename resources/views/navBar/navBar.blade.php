@@ -38,9 +38,9 @@
 
                 @auth
                 <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ Auth::user()->username }}
+                    {{ Auth::user()->name }}
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-end"> <!-- Ajout de dropdown-menu-end -->
                     <li><a class="dropdown-item" href="{{ route('app_profile') }}">Profile</a></li>
                     <li><a class="dropdown-item" href="{{ route('app_builds') }}">Builds</a></li>
                     <li><hr class="dropdown-divider"></li>
@@ -52,6 +52,7 @@
                     </li>
                 </ul>
                 @endauth
+
             </div>
         </div>
     </div>
