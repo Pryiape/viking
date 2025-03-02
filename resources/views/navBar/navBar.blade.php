@@ -26,15 +26,17 @@
             </ul>
 
             <div class="btn-group">
-                @guest
+            @guest
                 <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Connexion
+                Connexion
                 </button>
-                <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end"> <!-- Ajout de dropdown-menu-end -->
                     <li><a class="dropdown-item" href="{{ route('login') }}">Login</a></li>
                     <li><a class="dropdown-item" href="{{ route('register') }}">Register</a></li>
                 </ul>
-                @endguest
+            @endguest
+      
+
 
                 @auth
                 <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -45,7 +47,7 @@
                     <li><a class="dropdown-item" href="{{ route('app_builds') }}">Builds</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <form action="{{ route('app_logout') }}" method="post">
+                        <form action="{{ route('logout') }}" method="post">
                             @csrf
                             <button type="submit" class="dropdown-item">Déconnexion</button>
                         </form>

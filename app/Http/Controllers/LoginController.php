@@ -9,17 +9,11 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
-    protected $request;
-
-    function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
-
-
-
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('app_home');
+        }
         return view('auth.login');
     }
 
@@ -33,31 +27,29 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Authentication passed...
             return redirect()->intended('/');
         }
 
-        // If authentication fails, throw a validation exception
         throw ValidationException::withMessages([
-            'email' => [trans('auth.failed')],
+            'email' => [__('auth.failed')],
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         Auth::logout();
-        return redirect('/');
+        return redirect('/login');
     }
-    public function existEmail()
-    {
-        $email= $this->request-> input('Email');
-       $user = User::where('email', $email)->first();
-       $response ="";
-         ($user) ? $response ="exist" : $response ="not_exist";
-        return response()->json([
-            'code'=> 200,
-            'response'=> $response
-        ]);
 
+    public function existEmail(Request $request)
+    {
+        $email = $request->input('email');
+        $user = User::where('email', $email)->first();
+        $response = $user ? 'exist' : 'not_exist';
+
+        return response()->json([
+            'code' => 200,
+            'response' => $response,
+        ]);
     }
 }

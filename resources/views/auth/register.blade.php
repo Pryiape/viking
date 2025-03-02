@@ -16,25 +16,47 @@
                 </ul>
             </div>
         @endif
+        
         <form action="{{ route('register') }}" method="POST" id="form-register">
             @csrf
+
+            <!-- Nom d'utilisateur -->
             <div class="col-md-6 mx-auto">
                 <label for="inputUsername" class="form-label">Nom d'utilisateur</label>
-                <input type="text" class="form-control" id="inputUsername" name="Username" required>
+                <input type="text" class="form-control @error('Username') is-invalid @enderror" id="inputUsername" name="Username" required value="{{ old('Username') }}">
+                @error('Username')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+
+            <!-- Email -->
             <div class="col-md-6 mx-auto mt-3">
                 <label for="inputEmail4" class="form-label">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" name="email" required autocomplete="email" data-url-exist-email="{{ route('app_existEmail') }}" data-token="{{ csrf_token() }}">
-
+                <input type="email" class="form-control @error('email') is-invalid @enderror" id="inputEmail4" name="email" required autocomplete="email" value="{{ old('email') }}">
+                @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+
+            <!-- Mot de passe -->
             <div class="col-md-6 mx-auto mt-3">
                 <label for="inputPassword4" class="form-label">Mot de passe</label>
-                <input type="password" class="form-control" id="inputPassword4" name="password" required autocomplete="new-password">
+                <input type="password" class="form-control @error('password') is-invalid @enderror" id="inputPassword4" name="password" required autocomplete="new-password">
+                @error('password')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+
+            <!-- Confirmation du mot de passe -->
             <div class="col-md-6 mx-auto mt-3">
                 <label for="inputPasswordConfirmation" class="form-label">Confirmez le mot de passe</label>
-                <input type="password" class="form-control" id="inputPasswordConfirmation" name="password_confirmation" required autocomplete="new-password">
+                <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="inputPasswordConfirmation" name="password_confirmation" required autocomplete="new-password">
+                @error('password_confirmation')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+
+            <!-- Checkbox des conditions -->
             <div class="col-md-6 mx-auto mt-3">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
@@ -43,16 +65,20 @@
                     </label>
                 </div>
             </div>
+
+            <!-- Bouton d'inscription -->
             <div class="col-md-6 mx-auto mt-3">
                 <button type="submit" class="btn btn-primary">Créer un compte</button>
             </div>
+
+            <!-- Lien vers la connexion -->
             <div class="col-md-6 mx-auto mt-3 text-center">
                 <p class="text-muted">J'ai déjà un compte ? <a href="{{ route('login') }}">Se connecter</a></p>
             </div>
         </form>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal des termes d'utilisation -->
     <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

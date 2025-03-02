@@ -1,7 +1,6 @@
-
 @extends('welcome')
 
-@section('title', 'login')
+@section('title', 'Connexion')
 
 @section('content')
    <div class="container">
@@ -15,15 +14,15 @@
                     <input type="email" name="email" id="email" class="form-control mb-3 @error('email') is-invalid @enderror" value="{{ old('email') }}" required autocomplete="email" autofocus>
                     @error('email')
                     <div class="alert alert-danger" role="alert">
-                        {{$message}}
+                        {{ $message }}
                     </div>
                     @enderror
 
                     <label for="password">Mot de passe</label>
-                    <input type="password" name="password" id="password" class="form-control mb-3 @error('password') is-invalid @enderror">
+                    <input type="password" name="password" id="password" class="form-control mb-3 @error('password') is-invalid @enderror" required>
                     @error('password')
                     <div class="alert alert-danger" role="alert">
-                        {{$message}}
+                        {{ $message }}
                     </div>
                     @enderror
 
@@ -37,7 +36,7 @@
 
                     <button type="submit" class="btn btn-primary">Connexion</button>
 
-                    <p class="text-center text-muted mt-5">pas encore de compte ? <a href="{{route('register')}}">Creer un compte</a></p>
+                    <p class="text-center text-muted mt-5">Pas encore de compte ? <a href="{{ route('register') }}">Créer un compte</a></p>
                 </form>
             </div>
         </div>
