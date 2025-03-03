@@ -35,11 +35,7 @@ class BuildController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        Auth::user()->builds()->create([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
-
+    
         return redirect()->route('builds.index')->with('success', 'Build créé avec succès!');
     }
 

@@ -5,28 +5,31 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class HomeController extends Controller
 {
     //la page / vue home.blade.php
     public function home()
-    {
-        return view('home.home');
-    }
-     //la page / vue login.blade.php
-    public function about()
-    {
-        return view('home.about');
-    }
-  //la page / vue dashboard.blade.php
-  public function dashboard()
-  {
-      return view('home.dashboard');
-  }
+    {    
+        $blizzardController = new BlizzardController();
+        $data = $blizzardController->fetchGameData(); // Fetch class data
+        $classes = $data['classes'] ?? []; // Extract classes from the data
+        // ✅ Récupération des spécialisations avec SpecializationController
+        $specializationController = new SpecializationController();
+        $specializationData = $specializationController->getAllSpecializations();
 
-  public function builds()
-  {
-      $builds = Auth::user()->builds;
-      return view('builds.index', compact('builds'));
-  }
+        return view('home.home', [
+            'data' => $data,
+            'specializationData' => $specializationData->getData(),
+            'classes' => $classes // Pass classes to the view
+        ]);
+    }
+
+    //la page / vue dashboard.blade.php
+    public function dashboard()
+    {
+        return view('home.dashboard');
+    }
 }

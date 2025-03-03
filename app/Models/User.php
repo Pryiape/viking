@@ -47,8 +47,8 @@ class User extends Authenticatable
     /**
      * Get the builds for the user.
      */
-    public function builds()
+  /*  public function builds()
     {
         return $this->hasMany(Build::class);
-    }
+    }*/
 }
