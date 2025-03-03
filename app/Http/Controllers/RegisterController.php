@@ -19,9 +19,15 @@ class RegisterController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return back()->withErrors($validator)->withInput();
         }
 
+        // Check if the email already exists
+        if (User::where('email', $request->email)->exists()) {
+            return back()->withErrors(['email' => 'Cet email est déjà utilisé.'])->withInput();
+        }
+        
+        // Create the user
         $user = User::create([
             'name' => $request->Username,
             'email' => $request->email,

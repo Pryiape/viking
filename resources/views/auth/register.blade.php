@@ -17,7 +17,7 @@
             </div>
         @endif
         
-        <form action="{{ route('register') }}" method="POST" id="form-register">
+        <form action="{{ route('register') }}" method="POST" id="form-register" novalidate>
             @csrf
 
             <!-- Nom d'utilisateur -->
@@ -32,7 +32,8 @@
             <!-- Email -->
             <div class="col-md-6 mx-auto mt-3">
                 <label for="inputEmail4" class="form-label">Email</label>
-                <input type="email" class="form-control @error('email') is-invalid @enderror" id="inputEmail4" name="email" required autocomplete="email" value="{{ old('email') }}">
+                <input type="email" class="form-control @error('email') is-invalid @enderror" id="inputEmail4" name="email" required autocomplete="email" value="{{ old('email') }}"
+                data-url-exist-email="{{ route('app_existEmail') }}" data-token="{{ csrf_token() }}">
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -68,7 +69,7 @@
 
             <!-- Bouton d'inscription -->
             <div class="col-md-6 mx-auto mt-3">
-                <button type="submit" class="btn btn-primary">Créer un compte</button>
+                    <button type="submit" class="btn btn-primary w-100" onclick="console.log('Form submitted')">Créer un compte</button>
             </div>
 
             <!-- Lien vers la connexion -->
@@ -88,11 +89,8 @@
                 </div>
                 <div class="modal-body text-center">
                     <p>Les termes d'utilisation incluent les règles et les politiques que vous devez suivre pour utiliser ce site.</p>
-                    
-                    <!-- Ajout du GIF -->
                     <img src="{{ asset('jdg-joueur-du-grenier.gif') }}" alt="GIF animé" class="img-fluid">
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                 </div>
@@ -105,10 +103,10 @@
     <script src="{{ asset('assets/main/user/user.js') }}" type="module"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         });
     </script>
 @endsection
