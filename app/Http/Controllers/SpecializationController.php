@@ -11,7 +11,7 @@ class SpecializationController extends Controller
     protected $allSpecializations = []; // Déclaration de la propriété
 
     /**
-     * Récupère toutes les spécialisations et les classe selon leur ID.
+     * Récupère toutes les spécialisations de l'API Blizzard et les classe selon leur ID.
      */
     public function getAllSpecializations()
     {
@@ -48,7 +48,7 @@ class SpecializationController extends Controller
     }
 
     /**
-     * Récupère un token d'accès Blizzard.
+     * Récupère un token d'accès Blizzard en utilisant les identifiants du client.
      */
     private function getBlizzardAccessToken()
     {
@@ -67,6 +67,9 @@ class SpecializationController extends Controller
         return $response->json()['access_token'];
     }
 
+    /**
+     * Récupère les spécialisations associées à un ID de classe donné et retourne les noms des spécialisations.
+     */
     public function getSpecializationsByClass($classId)
     {
         $classSpecializations = [
@@ -99,7 +102,6 @@ class SpecializationController extends Controller
             577 => 'Havoc', 581 => 'Vengeance',
             1467 => 'Devastation', 1468 => 'Preservation', 1473 => 'Augmentation',
             102 => 'Balance', 103 => 'Feral', 104 => 'Guardian', 105 => 'Restoration',
-            
         ];
     
         // Vérifie si la classe existe
@@ -119,6 +121,4 @@ class SpecializationController extends Controller
     
         return response()->json($specializationNames);
     }
-    
-    
 }

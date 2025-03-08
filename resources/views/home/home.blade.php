@@ -86,5 +86,30 @@
     </select>
 
     <div id="talents"></div>
+
+    <button id="getTalents">Obtenir les talents</button>
+
+    <div id="talentTree">
+        <h2>Arbre de talents :</h2>
+        <pre id="talentData">{{ json_encode($talentData, JSON_PRETTY_PRINT) }}</pre>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#getTalents').click(function() {
+                var specializationId = $('#specialization-select').val();
+                $.ajax({
+                    url: '/get-talent-tree/' + specializationId,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#talentTree').html('<h2>Arbre de talents :</h2><pre>' + JSON.stringify(data, null, 2) + '</pre>');
+                    },
+                    error: function() {
+                        $('#talentTree').html('Erreur lors de la récupération des talents.');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

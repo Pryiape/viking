@@ -17,8 +17,10 @@ Route::get('/profile', [UserController::class, 'profile'])->name('app_profile');
 Route::get('/Blizzard', [HomeController::class, 'Blizzard'])->name('app_Blizzard');
 
 
-// Ajouter la route pour récupérer les spécialisations par classe
 Route::get('/specializations/{classId}', [SpecializationController::class, 'getSpecializationsByClass']);
+
+// Route pour récupérer les talents par spécialisation
+Route::get('/get-talent-tree/{specializationId}', [HomeController::class, 'getTalentTree']);
 
 // Tableau de bord protégé
 Route::match(['get', 'post'], '/dashboard', [HomeController::class, 'dashboard'])

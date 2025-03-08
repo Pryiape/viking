@@ -9,7 +9,11 @@ use Psy\Readline\Hoa\Console;
 
 class BlizzardController extends Controller
 {
+    /**
+     * Récupère un token d'accès Blizzard.
+     */
     public function getAccessToken()
+
     {
         $client_id = env('BLIZZARD_CLIENT_ID');
         $client_secret = env('BLIZZARD_CLIENT_SECRET');
@@ -29,7 +33,11 @@ class BlizzardController extends Controller
         return null;
     }
 
+    /**
+     * Récupère les données de jeu de l'API Blizzard.
+     */
     public function fetchGameData()
+
     {
         $accessToken = $this->getAccessToken();
         if (!$accessToken) {
