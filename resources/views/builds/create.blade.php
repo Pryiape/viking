@@ -9,13 +9,15 @@
             @csrf
             <div class="form-group">
                 <label for="name">Nom du Build</label>
-                <input type="text" name="name" id="name" class="form-control" required>
+                <input type="text" class="form-control" id="inputUsername" name="name" required autocomplete="username">
+
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea name="description" id="description" class="form-control" rows="4"></textarea>
+                <textarea class="form-control" id="inputDescription" name="description" autocomplete="off"></textarea>
+
             </div>
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="submit" class="btn btn-primary">Créer</button>
         </form>
     </div>
 @endsection

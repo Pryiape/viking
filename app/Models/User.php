@@ -8,11 +8,26 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Build;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Permission\Models\Permission; 
 
-class User extends Authenticatable
+class User extends Authenticatable  
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    public function hasPermissionTo($permission)
+    {
+        return $this->getAllPermissions()->contains('name', $permission);
+    }
 
+    public function permissions(): BelongsToMany
+    {
+        // Define the relationship with the Permission model
+        return $this->belongsToMany(Permission::class);
+    
+    
+    }  
+    use HasApiTokens, HasFactory, Notifiable;
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -44,11 +59,13 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    use HasRoles;
+
     /**
      * Get the builds for the user.
      */
-    /*public function builds()
+    public function builds()
     {
         return $this->hasMany(Build::class);
-    }*/
+    }
 }

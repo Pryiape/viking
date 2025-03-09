@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class SpecializationController extends Controller
 {
-    protected $allSpecializations = []; // Déclaration de la propriété
+    protected $allSpecializations = []; 
 
     /**
      * Récupère toutes les spécialisations de l'API Blizzard et les classe selon leur ID.
@@ -16,26 +15,23 @@ class SpecializationController extends Controller
     public function getAllSpecializations()
     {
         try {
-            // Récupération du token Blizzard
             $accessToken = $this->getBlizzardAccessToken();
             if (!$accessToken) {
                 return response()->json(['error' => 'Impossible de récupérer le token d\'accès.'], 500);
             }
 
-            // Requête à l'API Blizzard
             $url = 'https://us.api.blizzard.com/data/wow/playable-specialization/index';
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $accessToken
             ])->get($url, [
                 'namespace' => 'static-us',
-                'locale' => 'fr_FR'  // Utiliser la langue souhaitée
+                'locale' => 'fr_FR'
             ]);
 
             if ($response->failed()) {
                 return response()->json(['error' => 'Erreur API Blizzard', 'details' => $response->body()], 500);
             }
 
-            // Vérifie si on a bien reçu des spécialisations
             $this->allSpecializations = $response->json()['character_specializations'] ?? [];
             if (empty($this->allSpecializations)) {
                 return response()->json(['error' => 'Aucune spécialisation trouvée.'], 404);
@@ -48,7 +44,7 @@ class SpecializationController extends Controller
     }
 
     /**
-     * Récupère un token d'accès Blizzard en utilisant les identifiants du client.
+     * Récupère un token d'accès Blizzard.
      */
     private function getBlizzardAccessToken()
     {
@@ -68,7 +64,7 @@ class SpecializationController extends Controller
     }
 
     /**
-     * Récupère les spécialisations associées à un ID de classe donné et retourne les noms des spécialisations.
+     * Récupère les spécialisations associées à un ID de classe donné et retourne `id` et `name`.
      */
     public function getSpecializationsByClass($classId)
     {
@@ -104,21 +100,25 @@ class SpecializationController extends Controller
             102 => 'Balance', 103 => 'Feral', 104 => 'Guardian', 105 => 'Restoration',
         ];
     
-        // Vérifie si la classe existe
         if (!isset($classSpecializations[$classId])) {
             return response()->json(['error' => 'Classe inconnue.'], 404);
         }
     
-        // Récupération des spécialisations correspondantes et conversion en noms
-        $specializationNames = [];
+        $specializationData = [];
         foreach ($classSpecializations[$classId] as $specId) {
             if (isset($specNames[$specId])) {
-                $specializationNames[] = $specNames[$specId];
+                $specializationData[] = [
+                    'id' => $specId,
+                    'name' => $specNames[$specId]
+                ];
             } else {
-                $specializationNames[] = "Inconnu ({$specId})"; // Ajout de l'ID pour debug
+                $specializationData[] = [
+                    'id' => $specId,
+                    'name' => "Inconnu ({$specId})"
+                ];
             }
         }
     
-        return response()->json($specializationNames);
+        return response()->json($specializationData);
     }
 }

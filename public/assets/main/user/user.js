@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('form-register');
 
     form.addEventListener('submit', async function (event) {
+        // Ensure the form is submitted only through this handler
         event.preventDefault(); // Prevent immediate submission
+        console.log('Form submission triggered'); // Log form submission
     
         const username = document.getElementById('inputUsername').value;
         const email = document.getElementById('inputEmail4').value;
@@ -60,7 +62,9 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 console.log('Form action before submission:', form.action); // Log the form action
                 console.log('Email is available, submitting the form...');
+                // Ensure the form is submitted through the JavaScript handler
                 form.submit(); // Let Laravel handle the submission
+                console.log('Form submitted successfully'); // Log successful submission
             }
         } catch (error) {
             console.error('Error:', error);

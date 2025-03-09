@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Build;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+
 
 class BuildController extends Controller
 {
@@ -28,6 +30,11 @@ class BuildController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -81,9 +88,10 @@ class BuildController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Build $build)
-    {
+    {       
+    
         $this->authorize('delete', $build);
-        $build->delete();
+        $build->delete();       
         return redirect()->route('builds.index')->with('success', 'Build supprimé avec succès!');
     }
 }

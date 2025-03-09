@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
+    public function showRegisterForm()
+    {
+    return view('auth.register'); // Assure-toi que cette vue existe : resources/views/auth/register.blade.php
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
