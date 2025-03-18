@@ -19,6 +19,7 @@ class Build extends Model
         'user_id',
         'name',
         'description',
+        'date'
     ];
 
     /**

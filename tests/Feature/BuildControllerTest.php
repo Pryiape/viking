@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Build;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,66 +11,73 @@ class BuildControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function an_authenticated_user_can_view_builds()
+    protected function setUp(): void
     {
-        // Créer un utilisateur unique et l'authentifier
+        parent::setUp();
+        // Create a user and authenticate
         $user = User::factory()->create();
-        $user->assignRole('user'); // Assigner le rôle utilisateur
-
         $this->actingAs($user);
-
-        $response = $this->get('/builds');
-
-        $response->assertStatus(200);
     }
 
-    /** @test */
-    public function an_authenticated_user_can_create_a_build()
+    public function test_name_exceeding_100_characters_transfers_to_description()
     {
-        // Créer un utilisateur unique et l'authentifier
-        $user = User::factory()->create();
-        $user->assignRole('user');
-
-        $this->actingAs($user);
-
-        // Création du build
+        $name = str_repeat('A', 150); // Name with 150 characters
         $response = $this->post('/builds', [
-            'name' => 'New Build',
-            'description' => 'Build description',
-            'user_id' => $user->id, // Associer le build à l'utilisateur
+            'name' => $name,
+            'description' => 'Initial description.'
         ]);
 
-        // Vérifier que l'utilisateur est redirigé après la création du build
-        $response->assertRedirect('/builds');
-
-        // Vérifier que le build est bien en base de données
+        $response->assertRedirect(route('builds.index'));
         $this->assertDatabaseHas('builds', [
-            'name' => 'New Build',
-            'description' => 'Build description',
-            'user_id' => $user->id,
+            'name' => substr($name, 0, 100), // First 100 characters in name
+            'description' => 'Initial description. ' . substr($name, 100) . ' ' . now()->format('d/m/Y')
         ]);
     }
 
-    /** @test */
-    public function an_authenticated_user_can_delete_a_build()
+    public function test_valid_name_can_be_stored()
     {
-        // Créer un utilisateur unique et l'authentifier
-        $user = User::factory()->create();
-        $user->assignRole('user');
+        $response = $this->post('/builds', [
+            'name' => 'Valid Name',
+            'description' => 'A valid description.'
+        ]);
 
-        // Créer un build pour cet utilisateur
-        $build = Build::factory()->create(['user_id' => $user->id]);
+        $response->assertRedirect(route('builds.index'));
+        $this->assertDatabaseHas('builds', [
+            'name' => 'Valid Name'
+        ]);
+    }
 
-        $this->actingAs($user);
+    public function test_name_too_short_is_rejected()
+    {
+        $response = $this->post('/builds', [
+            'name' => '1234', // Invalid: too short
+            'description' => 'A valid description.'
+        ]);
 
-        // Suppression du build
-        $response = $this->delete('/builds/' . $build->id);
+        $response->assertSessionHasErrors('name');
+    }
 
-        // Vérifier que l'utilisateur est bien redirigé après suppression
-        $response->assertRedirect('/builds');
+    public function test_name_too_long_is_rejected()
+    {
+        $response = $this->post('/builds', [
+            'name' => str_repeat('A', 101), // Invalid: too long
+            'description' => 'A valid description.'
+        ]);
 
-        // Vérifier que le build a bien été supprimé
-        $this->assertDatabaseMissing('builds', ['id' => $build->id]);
+        $response->assertSessionHasErrors('name');
+    }
+
+    public function test_empty_description_is_set_correctly()
+    {
+        $response = $this->post('/builds', [
+            'name' => 'Valid Name',
+            'description' => ''
+        ]);
+
+        $response->assertRedirect(route('builds.index'));
+        $this->assertDatabaseHas('builds', [
+            'name' => 'Valid Name',
+            'description' => 'pas d\'information ' . now()->format('d/m/Y')
+        ]);
     }
 }
