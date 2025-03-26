@@ -3,34 +3,42 @@
 @section('title', 'Mes Builds')
 
 @section('content')
-    <div class="container">
-        <h1 class="text-center">Mes Builds</h1>
-        <a href="{{ route('builds.create') }}" class="btn btn-success">Créer un Nouveau Build</a>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($builds as $build)
-                    <tr>
-                        <td>{{ $build->name }}</td>
-                        <td>{{ $build->description }}</td>
-                        <td>
-                            <a href="{{ route('builds.show', $build) }}" class="btn btn-info">Voir</a>
-                            <a href="{{ route('builds.edit', $build) }}" class="btn btn-warning">Modifier</a>
-                            <form action="{{ route('builds.destroy', $build) }}" method="POST" style="display:inline;">
+<div class="container">
+    <h1 class="text-center mb-4">Mes Builds</h1>
+
+    <a href="{{ route('builds.create') }}" class="btn btn-success mb-4">Créer un Nouveau Build</a>
+
+    <div class="row">
+        @forelse($myBuilds as $build)
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $build->sujet }}</h5>
+                        <p class="card-text">{{ $build->description }}</p>
+
+                        <div class="mb-2">
+                            @if($build->is_public)
+                                <span class="badge bg-success">Public</span>
+                            @else
+                                <span class="badge bg-secondary">Privé</span>
+                            @endif
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('builds.edit', $build) }}" class="btn btn-sm btn-primary">Modifier</a>
+
+                            <form action="{{ route('builds.destroy', $build) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                                <button class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce build ?')">Supprimer</button>
                             </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <p class="text-muted">Aucun build pour l’instant.</p>
+        @endforelse
     </div>
+</div>
 @endsection

@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users_tableee', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        Schema::table('builds', function (Blueprint $table) {
+            $table->boolean('is_public')->default(false);
+        });        
     }
 
     /**
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_tableee');
+        Schema::table('builds', function (Blueprint $table) {
+            //
+        });
     }
 };

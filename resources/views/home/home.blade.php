@@ -155,5 +155,17 @@
             border-radius: 8px;
         }
     </style>
-</body>
+    <h2>Builds publics</h2>
+
+@foreach($publicBuilds as $build)
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>{{ $build->sujet }}</h5>
+            <p>{{ $build->description }}</p>
+            <small>Créé par {{ $build->user->name }}</small>
+        </div>
+    </div>
+@endforeach
+
+</body> 
 </html>

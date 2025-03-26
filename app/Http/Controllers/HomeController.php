@@ -34,6 +34,12 @@ class HomeController extends Controller
             'talentData' => $talentData // Pass talent data to the view
         ]);
     }
+    public function index()
+    {
+    $publicBuilds = \App\Models\Build::where('is_public', true)->latest()->get();
+
+    return view('home', compact('publicBuilds'));
+    }
 
     //la page / vue dashboard.blade.php
     /**

@@ -17,7 +17,7 @@ class Build extends Model
      */
     protected $fillable = [
         'user_id',
-        'name',
+        'sujet',
         'description',
         'date'
     ];
