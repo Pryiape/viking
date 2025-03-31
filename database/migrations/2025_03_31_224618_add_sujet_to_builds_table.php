@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('builds', function (Blueprint $table) {
-            $table->boolean('is_public')->default(false);
-        });        
+            //
+        });
     }
 
     /**
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('builds', function (Blueprint $table) {
-            $table->dropColumn('is_public');
+            //
         });
     }
 };

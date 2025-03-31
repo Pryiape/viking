@@ -20,9 +20,6 @@ class BuildController extends Controller
     
         return view('build.index', compact('myBuilds'));
     }
-    
-
-    
 
     /**
      * Show the form for creating a new resource.
@@ -54,7 +51,6 @@ class BuildController extends Controller
             'is_public' => $request->has('is_public'),
         ]);
         
-    
         return redirect()->route('build.index')->with('success', 'Build créé avec succès.');
     }
 
@@ -108,21 +104,29 @@ class BuildController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-{
-    $build = Build::findOrFail($id);
+    {
+        $build = Build::findOrFail($id);
 
-    $user = Auth::user();
+        $user = Auth::user();
 
-    if (
-        $user->id !== $build->user_id &&
-        !in_array($user->role, ['admin', 'moderateur'])
-    ) {
-        abort(403, 'Vous n’avez pas la permission de supprimer ce build.');
+        if (
+            $user->id !== $build->user_id &&
+            !in_array($user->role, ['admin', 'moderateur'])
+        ) {
+            abort(403, 'Vous n’avez pas la permission de supprimer ce build.');
+        }
+
+        $build->delete();
+
+        return redirect()->route('build.index')->with('success', 'Build supprimé.');
     }
 
-    $build->delete();
-
-    return redirect()->route('build.index')->with('success', 'Build supprimé.');
-}
-
+    /**
+     * Display a listing of the app builds.
+     */
+    public function appBuilds()
+    {
+        // Logic to retrieve and display app builds can be added here.
+        return view('builds.app_builds'); // Assuming there is a view for app builds.
+    }
 }

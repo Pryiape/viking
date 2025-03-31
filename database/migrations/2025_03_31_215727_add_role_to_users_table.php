@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('builds', function (Blueprint $table) {
-            $table->boolean('is_public')->default(false);
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role')->default('utilisateur'); // valeurs possibles : utilisateur, moderateur, admin
         });        
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('builds', function (Blueprint $table) {
-            $table->dropColumn('is_public');
+        Schema::table('users', function (Blueprint $table) {
+            //
         });
     }
 };

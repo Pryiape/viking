@@ -10,18 +10,31 @@ class BuildPolicy
     /**
      * Determine whether the user can view any builds.
      */
+   
     public function viewAny(User $user)
     {
-        return $user->hasPermission('read_build');
+        return true; // autorise tous les utilisateurs connectés
     }
+        
+    
 
     /**
      * Determine whether the user can view the build.
      */
-    public function view(User $user, Build $build)
+    public function view(?User $user, Build $build)
     {
-        return $user->id === $build->user_id || $user->hasPermission('read_build');
+        // Si le build est public → tout le monde peut voir (même non connecté)
+        if ($build->is_public) {
+            return true;
+        }
+    
+        // Si utilisateur connecté → vérifie droits ou s'il est propriétaire
+        return $user && (
+            $user->id === $build->user_id ||
+            $user->hasPermission('read_build')
+        );
     }
+    
 
     /**
      * Determine whether the user can create builds.

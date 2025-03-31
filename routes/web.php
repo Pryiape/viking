@@ -6,38 +6,44 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\BuildController;
-use App\Http\Controllers\TalentController; // Importer le TalentController
-use App\Http\Controllers\SpecializationController; // Importer le SpecializationController
+use App\Http\Controllers\TalentController;
+use App\Http\Controllers\SpecializationController;
 
-// Page d'accueil et autres pages
+// Pages publiques
 Route::get('/', [HomeController::class, 'home'])->name('app_home');
-Route::get('/a-propos', [HomeController::class, 'about'])->name('app_about'); // Rename route to À propos
-Route::get('/profile', [UserController::class, 'profile'])->name('app_profile');
+Route::get('/a-propos', [HomeController::class, 'about'])->name('app_about');
 Route::get('/Blizzard', [HomeController::class, 'Blizzard'])->name('app_Blizzard');
 
+// Authentification
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/specializations/{classId}', [SpecializationController::class, 'getSpecializationsByClass']);
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.form');
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
+Route::post('/existEmail', [LoginController::class, 'existEmail'])->name('app_existEmail');
 
-// Route pour récupérer les talents par spécialisation
-Route::get('/get-talent-tree/{specializationId}', [TalentController::class, 'getTalentTree']);
-
-// Tableau de bord protégé
+// Dashboard protégé
 Route::match(['get', 'post'], '/dashboard', [HomeController::class, 'dashboard'])
     ->name('app_dashboard')
     ->middleware('auth');
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [RegisterController::class, 'register'])->name('register');
+// Profil utilisateur
+Route::get('/profile', [UserController::class, 'profile'])->name('app_profile')->middleware('auth');
 
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/existEmail', [LoginController::class, 'existEmail'])->name('app_existEmail');
+// Gestion des talents & spécialisations
+Route::get('/specializations/{classId}', [SpecializationController::class, 'getSpecializationsByClass']);
+Route::get('/get-talent-tree/{specializationId}', [TalentController::class, 'getTalentTree']);
+
+Route::get('/app_builds', [BuildController::class, 'appBuilds'])->name('app_builds');
+
+// Routes Builds protégées
 Route::middleware(['auth'])->group(function () {
-    Route::post('/builds', [BuildController::class, 'store'])->middleware('permission:create_build');
-    Route::get('/builds', [BuildController::class, 'index'])->middleware('permission:read_build');
-    Route::delete('/builds/{id}', [BuildController::class, 'destroy'])->middleware('permission:delete_build');
+    Route::get('/builds', [BuildController::class, 'index'])->name('build.index');
+    Route::get('/builds/create', [BuildController::class, 'create'])->name('builds.create');
+    Route::post('/builds', [BuildController::class, 'store'])->name('builds.store');
+    Route::delete('/builds/{id}', [BuildController::class, 'destroy'])->name('builds.destroy');
+    Route::get('/builds/{build}', [BuildController::class, 'show'])->name('builds.show');
+    Route::get('/builds/{build}/edit', [BuildController::class, 'edit'])->name('builds.edit');
+    Route::put('/builds/{build}', [BuildController::class, 'update'])->name('builds.update');
 });
-Route::get('/builds/create', [BuildController::class, 'create'])->name('builds.create')->middleware('auth');
-Route::get('/builds', [BuildController::class, 'index'])->name('app_builds')->middleware('permission:read_build');
-//Route::resource('builds', BuildController::class)->middleware('auth');

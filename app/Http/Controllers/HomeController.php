@@ -27,7 +27,9 @@ class HomeController extends Controller
         $firstSpecializationId = $specializationData->data[0]->id ?? null; // Utiliser l'ID de la première spécialisation
         $talentData = $firstSpecializationId ? $this->getTalentTree($firstSpecializationId) : null;
 
-        return view('home.home', [
+$publicBuilds = \App\Models\Build::where('is_public', true)->latest()->get();
+return view('home.home', [
+    'publicBuilds' => $publicBuilds,
             'data' => $data,
             'specializationData' => $specializationData->getData(),
             'classes' => $classes, // Pass classes to the view

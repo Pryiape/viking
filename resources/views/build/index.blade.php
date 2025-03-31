@@ -5,7 +5,6 @@
 @section('content')
 <div class="container">
     <h1 class="text-center mb-4">Mes Builds</h1>
-
     <a href="{{ route('builds.create') }}" class="btn btn-success mb-4">Créer un Nouveau Build</a>
 
     <div class="row">
