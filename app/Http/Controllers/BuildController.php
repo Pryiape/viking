@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Build;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BuildController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -78,27 +80,21 @@ class BuildController extends Controller
     public function update(Request $request, Build $build)
     {
         $this->authorize('update', $build);
-        
+    
         $request->validate([
-            'name' => 'required|string|regex:/^.{5,255}$/',
-            'description' => 'nullable|string'
+            'sujet' => 'required|string|max:255',
+            'description' => 'required|string',
         ]);
-
-        $name = $request->name;
-        $description = $request->description;
-
-        if (strlen($name) > 100) {
-            $description .= substr($name, 100); // Transfer excess characters to description
-            $name = substr($name, 0, 100); // Keep only the first 100 characters in name
-        }
-
+    
         $build->update([
-            'name' => $name,
-            'description' => $description . " " . now()->format('d/m/Y') // Always append the date
+            'sujet' => $request->sujet,
+            'description' => $request->description,
+            'is_public' => $request->has('is_public'),
         ]);
-
-        return redirect()->route('builds.index')->with('success', 'Build mis à jour avec succès!');
+    
+        return redirect()->route('build.index')->with('success', 'Build mis à jour avec succès!');
     }
+    
 
     /**
      * Remove the specified resource from storage.
