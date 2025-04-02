@@ -19,11 +19,7 @@ class TalentTreeController extends Controller
             'client_id' => env('BLIZZARD_CLIENT_ID'),
             'client_secret' => env('BLIZZARD_CLIENT_SECRET'),
         ]);
-        if ($response->failed()) {
-            // Afficher une erreur si la récupération du jeton échoue
-            return null;
-        }
-        return $response->json()['access_token'] ?? null;
+        return $response->successful() ? $response->json()['access_token'] : null;
     }
 
     private function getSpellMediaUrl($spellId, $accessToken)
@@ -34,40 +30,42 @@ class TalentTreeController extends Controller
             'locale' => $this->locale,
         ]);
 
-        if ($response->failed()) {
-            return null;
+        if ($response->successful()) {
+            $media = $response->json();
+            foreach ($media['assets'] ?? [] as $asset) {
+                if ($asset['key'] === 'icon') {
+                    return $asset['value'];
+                }
+            }
+            return $media['assets'][0]['value'] ?? null;
         }
 
-        $media = $response->json();
-        return $media['assets'][0]['value'] ?? null;
+        return null;
     }
 
     public function fetchTalentTree($specId)
     {
-        // Augmenter le temps d'exécution maximal à 120 secondes
         set_time_limit(120);
-
         $accessToken = $this->getAccessToken();
-        if (!$accessToken) {
-            return response()->json(['error' => 'Token Blizzard manquant ou invalide'], 500);
-        }
+        if (!$accessToken) return response()->json(['error' => 'Token Blizzard manquant'], 500);
 
-        $specResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/playable-specialization/{$specId}", [
+        $specDataResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/playable-specialization/{$specId}", [
             'namespace' => $this->namespace,
             'locale' => $this->locale,
         ]);
 
-        if ($specResponse->failed()) {
-            return response()->json(['error' => 'Erreur lors de la récupération de la spécialisation'], 500);
+        if ($specDataResponse->failed()) {
+            return response()->json(['error' => 'Erreur récupération spécialisation'], 500);
         }
 
-        $json = $specResponse->json();
-        $href = $json['spec_talent_tree']['key']['href'] ?? null;
-        if (!$href || !preg_match('/talent-tree\/(\d+)/', $href, $matches)) {
-            return response()->json(['error' => 'Aucun treeId trouvé pour cette spécialisation.'], 404);
+        $specData = $specDataResponse->json();
+        $treeHref = $specData['spec_talent_tree']['key']['href'] ?? null;
+
+        if (!$treeHref || !preg_match('/talent-tree\/(\d+)/', $treeHref, $match)) {
+            return response()->json(['error' => 'Aucun treeId trouvé.'], 404);
         }
 
-        $treeId = $matches[1];
+        $treeId = $match[1];
 
         $treeResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/talent-tree/{$treeId}/playable-specialization/{$specId}", [
             'namespace' => $this->namespace,
@@ -75,41 +73,57 @@ class TalentTreeController extends Controller
         ]);
 
         if ($treeResponse->failed()) {
-            return response()->json(['error' => 'Erreur lors de la récupération de l\'arbre'], 500);
+            return response()->json(['error' => 'Erreur récupération arbre de talents'], 500);
         }
 
-        $tree = $treeResponse->json();
-
+        $treeJson = $treeResponse->json();
         $nodes = array_merge(
-            $tree['class_talent_nodes'] ?? [],
-            $tree['spec_talent_nodes'] ?? []
+            $treeJson['class_talent_nodes'] ?? [],
+            $treeJson['spec_talent_nodes'] ?? []
         );
 
         $talents = [];
-
         foreach ($nodes as $node) {
-            $ranks = $node['ranks'][0]['tooltip'] ?? null;
-
-            // Vérification que les données existent bien
-            if (!$ranks || !isset($ranks['spell_tooltip'])) {
-                continue; // on saute ce talent si les données sont incomplètes
-            }
-
-            $tooltip = $ranks['spell_tooltip'];
-            $spell = $tooltip['spell'] ?? null;
-
-            // Utiliser l'ID du sort pour récupérer l'URL de l'image
-            $spellId = $spell['id'] ?? null;
-            $iconUrl = $spellId ? $this->getSpellMediaUrl($spellId, $accessToken) : '';
-
-            $talents[] = [
+            $entry = [
                 'id' => $node['id'],
-                'name' => $spell['name'] ?? 'Nom inconnu',
-                'description' => $tooltip['description'] ?? '',
-                'icon' => $iconUrl,
                 'row' => $node['display_row'] ?? 0,
                 'column' => $node['display_col'] ?? 0,
+                'requires' => array_column($node['requirements'] ?? [], 'required_node_id'),
+                'name' => '',
+                'description' => '',
+                'icon' => '',
+                'choices' => []
             ];
+
+            if ($node['node_type']['type'] === 'CHOICE' && isset($node['ranks'])) {
+                foreach ($node['ranks'] as $rank) {
+                    $tooltip = $rank['tooltip']['spell_tooltip'] ?? null;
+                    $spell = $tooltip['spell'] ?? null;
+                    $spellId = $spell['id'] ?? null;
+                    $icon = $spellId ? $this->getSpellMediaUrl($spellId, $accessToken) : '';
+                    if ($spell && $tooltip) {
+                        $entry['choices'][] = [
+                            'name' => $spell['name'] ?? '',
+                            'description' => $tooltip['description'] ?? '',
+                            'icon' => $icon
+                        ];
+                    }
+                }
+            } elseif (!empty($node['ranks'])) {
+                foreach ($node['ranks'] as $rank) {
+                    $tooltip = $rank['tooltip']['spell_tooltip'] ?? null;
+                    $spell = $tooltip['spell'] ?? null;
+                    if ($spell && $tooltip) {
+                        $spellId = $spell['id'] ?? null;
+                        $entry['name'] = $spell['name'] ?? '';
+                        $entry['description'] = $tooltip['description'] ?? '';
+                        $entry['icon'] = $spellId ? $this->getSpellMediaUrl($spellId, $accessToken) : '';
+                        break;
+                    }
+                }
+            }
+
+            $talents[] = $entry;
         }
 
         return response()->json($talents);

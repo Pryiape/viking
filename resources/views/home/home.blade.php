@@ -52,19 +52,42 @@
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
             position: relative;
             transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+            cursor: pointer;
+            display: flex;
+            overflow: hidden;
         }
         .talent-box:hover {
             transform: scale(1.1);
             z-index: 2;
             box-shadow: 0 0 12px #ffcc00, 0 0 20px #ffaa00 inset;
         }
+        .talent-box.selected {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+        }
         .talent-box img {
-            width: 100%;
             height: 100%;
-            border-radius: 6px;
-            border: 1px solid #000;
             object-fit: cover;
         }
+
+        .talent-box img:only-child {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #000;
+        }
+
+        .talent-box img:first-child:not(:only-child),
+        .talent-box img:last-child:not(:only-child) {
+            width: 50%;
+            border-radius: 6px 0 0 6px;
+            border: 1px solid #000;
+        }
+
+        .talent-box img:last-child:not(:only-child) {
+            border-left: 1px solid #000;
+            border-radius: 0 6px 6px 0;
+        }
+
         .talent-box::after {
             content: attr(data-name);
             position: absolute;
@@ -104,6 +127,35 @@
             stroke: #FFD700;
             stroke-width: 2;
         }
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .dialog {
+            background: #1c1c1c;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+        }
+        .dialog button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .dialog button:hover {
+            background: #333;
+        }
     </style>
 </head>
 <body>
@@ -124,6 +176,7 @@
         <option value="">-- Spécialisation --</option>
     </select>
     <button onclick="loadTalentTree()">Charger les talents</button>
+    <button onclick="saveBuild()">Sauvegarder le build</button>
 
     <div class="wrapper">
         <div class="tree-columns">
@@ -136,7 +189,19 @@
 
     <div class="tooltip" id="tooltip"></div>
 
+    <!-- Dialog for selecting between choice talents -->
+    <div class="dialog-overlay" id="dialogOverlay">
+        <div class="dialog" id="dialog">
+            <h3>Choisissez un talent</h3>
+            <div id="dialogChoices"></div>
+            <button onclick="closeDialog()">Annuler</button>
+        </div>
+    </div>
+
     <script>
+    let selectedTalents = [];
+    const MAX_TALENT_POINTS = 31;
+
     async function loadSpecs() {
         const classId = document.getElementById("class-select").value;
         const specSelect = document.getElementById("specialization-select");
@@ -146,24 +211,26 @@
 
         try {
             const response = await fetch(`/specializations/${classId}`);
+            if (!response.ok) {
+                throw new Error('Erreur lors de la récupération des spécialisations');
+            }
             const data = await response.json();
 
-            if (!Array.isArray(data)) {
-                console.error("Données inattendues reçues pour les spécialisations:", data);
-                return;
-            }
+            if (!Array.isArray(data)) return;
 
             data.forEach(spec => {
                 specSelect.innerHTML += `<option value="${spec.id}" data-specname="${spec.name.toLowerCase().replace(/ /g, '-')}">${spec.name}</option>`;
             });
 
             specSelect.style.display = 'block';
-        } catch (err) {
-            console.error("Erreur lors du chargement des spécialisations:", err);
+        } catch (error) {
+            console.error(error);
+            alert('Erreur lors de la récupération des spécialisations');
         }
     }
 
     async function loadTalentTree() {
+        selectedTalents = [];
         const specSelect = document.getElementById("specialization-select");
         const specId = specSelect.value;
         const specName = specSelect.options[specSelect.selectedIndex].dataset.specname;
@@ -179,6 +246,9 @@
 
         try {
             const response = await fetch(`/api/talent-tree/${specId}`);
+            if (!response.ok) {
+                throw new Error('Erreur lors de la récupération des talents');
+            }
             const talents = await response.json();
 
             if (!Array.isArray(talents)) {
@@ -194,11 +264,19 @@
                 div.className = "talent-box";
                 div.style.gridColumnStart = talent.column + 1;
                 div.style.gridRowStart = talent.row + 1;
-                div.setAttribute("data-name", talent.name);
-                div.innerHTML = `<img src="${talent.icon}" alt="${talent.name}">`;
-
-                div.addEventListener('mouseenter', () => {
-                    tooltip.innerHTML = `<strong>${talent.name}</strong><br>${talent.description}`;
+                const displayName = talent.choices?.[0]?.name || talent.name;
+                div.setAttribute("data-name", displayName);
+                if (talent.choices && talent.choices.length > 1) {
+                    div.innerHTML = talent.choices.slice(0, 2).map(choice => `<img src="${choice.icon}" alt="${choice.name}">`).join('');
+                } else {
+                    div.innerHTML = `<img src="${talent.icon}" alt="${talent.name}">`;
+                }
+                div.addEventListener('mouseenter', (e) => {
+                    if (talent.choices && talent.choices.length > 1) {
+                        tooltip.innerHTML = talent.choices.map(choice => `<strong style='color:#00ff00;'>${choice.name}</strong><br><span>${choice.description}</span><br><br>`).join('');
+                    } else {
+                        tooltip.innerHTML = `<strong>${talent.name}</strong><br>${talent.description}`;
+                    }
                     tooltip.style.visibility = 'visible';
                     tooltip.style.opacity = 1;
                 });
@@ -209,6 +287,14 @@
                 div.addEventListener('mouseleave', () => {
                     tooltip.style.visibility = 'hidden';
                     tooltip.style.opacity = 0;
+                });
+
+                div.addEventListener('click', () => {
+                    if (talent.choices && talent.choices.length > 1) {
+                        showDialog(talent);
+                    } else {
+                        toggleTalentSelection(talent.id, div);
+                    }
                 });
 
                 grid.appendChild(div);
@@ -237,11 +323,57 @@
             });
 
             document.querySelector('.wrapper').style.display = 'flex';
-
         } catch (error) {
-            console.error("Erreur lors du chargement des talents:", error);
+            console.error(error);
             grid.innerHTML = "Erreur lors de la récupération des talents.";
         }
+    }
+
+    function toggleTalentSelection(talentId, element) {
+        if (element.classList.contains('selected')) {
+            element.classList.remove('selected');
+            selectedTalents = selectedTalents.filter(id => id !== talentId);
+        } else if (selectedTalents.length < MAX_TALENT_POINTS) {
+            element.classList.add('selected');
+            selectedTalents.push(talentId);
+        }
+    }
+
+    function showDialog(talent) {
+        const dialogOverlay = document.getElementById("dialogOverlay");
+        const dialogChoices = document.getElementById("dialogChoices");
+        dialogChoices.innerHTML = "";
+
+        talent.choices.forEach(choice => {
+            const button = document.createElement("button");
+            button.innerHTML = `<img src="${choice.icon}" alt="${choice.name}" style="width:32px;height:32px;"><br>${choice.name}`;
+            button.addEventListener('click', () => {
+                const element = document.querySelector(`.talent-box[data-name='${choice.name}']`);
+                toggleTalentSelection(talent.id, element);
+                closeDialog();
+            });
+            dialogChoices.appendChild(button);
+        });
+
+        dialogOverlay.style.display = 'flex';
+    }
+
+    function closeDialog() {
+        const dialogOverlay = document.getElementById("dialogOverlay");
+        dialogOverlay.style.display = 'none';
+    }
+
+    function saveBuild() {
+        const json = JSON.stringify(selectedTalents);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'mon_build_talent.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     }
     </script>
 </body>
