@@ -16,10 +16,11 @@
         }
         .wrapper {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start; /* Aligner à gauche */
             align-items: flex-start;
             padding: 20px;
             overflow-x: auto;
+            display: none; /* Masquer par défaut */
         }
         .tree-columns {
             display: flex;
@@ -27,14 +28,12 @@
         }
         .tree-container {
             position: relative;
-            width: 560px;
             padding: 30px;
+            border-radius: 12px;
             background-size: cover;
             background-position: center;
-            border-radius: 12px;
-            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
+            background-color: rgba(0, 0, 0, 0.8); /* Ajouter un fond noir */
+            box-shadow: none;
         }
         .grid {
             display: grid;
@@ -78,6 +77,18 @@
             color: white;
             white-space: nowrap;
         }
+        .tooltip {
+            display: none;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            max-width: 200px;
+            font-size: 12px;
+        }
         svg.connections {
             position: absolute;
             top: 0;
@@ -120,6 +131,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Tooltip pour la description du talent -->
+    <div class="tooltip" id="tooltip"></div>
 
     <script>
     async function loadSpecs() {
@@ -179,9 +193,13 @@
                 div.style.gridColumnStart = talent.column + 1;
                 div.style.gridRowStart = talent.row + 1;
                 div.setAttribute("data-name", talent.name);
+                div.setAttribute("data-description", talent.description); // Ajouter la description
                 div.innerHTML = `
-                    <img src="https://render.worldofwarcraft.com/us/icons/56/${talent.icon.replace(/.*\/(.*)\.jpg$/, '$1')}.jpg" alt="${talent.name}">
+                    <img src="${talent.icon}" alt="${talent.name}">
                 `;
+                // Ajouter les événements mouseover et mouseout
+                div.addEventListener('mouseover', (event) => showTooltip(event, talent.description));
+                div.addEventListener('mouseout', hideTooltip);
                 grid.appendChild(div);
                 nodeMap[talent.id] = div;
             });
@@ -207,10 +225,25 @@
                 });
             });
 
+            document.querySelector('.wrapper').style.display = 'flex'; // Afficher le conteneur des talents
+
         } catch (error) {
             console.error("Erreur lors du chargement des talents:", error);
             grid.innerHTML = "Erreur lors de la récupération des talents.";
         }
+    }
+
+    function showTooltip(event, description) {
+        const tooltip = document.getElementById("tooltip");
+        tooltip.style.display = 'block';
+        tooltip.style.left = event.pageX + 'px';
+        tooltip.style.top = event.pageY + 'px';
+        tooltip.innerHTML = description;
+    }
+
+    function hideTooltip() {
+        const tooltip = document.getElementById("tooltip");
+        tooltip.style.display = 'none';
     }
     </script>
 </body>
