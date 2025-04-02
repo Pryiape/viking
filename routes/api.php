@@ -2,16 +2,17 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TalentController;
-use App\Http\Controllers\BlizzardController;
 
+use App\Http\Controllers\TalentTreeController;
 
 
 
 
 // Route pour récupérer la liste des classes WoW
-Route::get('/classes', [TalentController::class, 'getClasses']);
-Route::get('/talents/{class}', [TalentController::class, 'getTalents']);// Route d'authentification utilisateur (exemple de base Laravel)
+Route::get('/classes', [TalentTreeController::class, 'getClasses']);
+Route::get('/talent-tree/{specId}', [TalentTreeController::class, 'fetchTalentTree']);
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes

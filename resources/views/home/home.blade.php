@@ -5,167 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Talents WoW</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        let allClasses = [];
-        let classSpecializations = {};
-
-        async function loadData() {
-            try {
-                const response = await fetch('/specializations');
-                const data = await response.json();
-
-                if (!data.playable_classes || !data.classSpecializations) {
-                    throw new Error("Réponse invalide des spécialisations.");
-                }
-
-                allClasses = data.playable_classes;
-                classSpecializations = data.classSpecializations;
-
-                console.log(" Classes chargées :", allClasses);
-                console.log(" Correspondance Classe -> Spécialisations :", classSpecializations);
-
-                const classSelect = document.getElementById("class-select");
-                classSelect.innerHTML = `<option value="">Sélectionnez une classe</option>`;
-
-                allClasses.forEach(cls => {
-                    classSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
-                });
-
-            } catch (error) {
-                console.error(" Erreur lors du chargement des données :", error);
-            }
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
         }
-
-        async function filterSpecializations() {
-    const selectedClass = document.getElementById("class-select").value;
-    const specSelect = document.getElementById("specialization-select");
-
-    specSelect.style.display = "block";
-
-    if (!selectedClass) {
-        specSelect.innerHTML = `<option value="">Aucune spécialisation disponible</option>`;
-        return;
-    }
-
-    try {
-        const response = await fetch(`/specializations/${selectedClass}`);
-        const specializations = await response.json();
-
-        if (response.ok) {
-            specSelect.innerHTML = `<option value="">Sélectionnez une spécialisation</option>`;
-            specializations.forEach(spec => {
-                specSelect.innerHTML += `<option value="${spec.id}">${spec.name}</option>`;
-            });
-        } else {
-            specSelect.innerHTML = `<option value="">Aucune spécialisation disponible</option>`;
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            overflow-x: auto;
         }
-    } catch (error) {
-        console.error("Erreur lors de la récupération des spécialisations :", error);
-        specSelect.innerHTML = `<option value="">Erreur de chargement</option>`;
-    }
-}
-
-
-        document.addEventListener("DOMContentLoaded", async function () {
-            await loadData();
-        });
-    </script>
+        .tree-columns {
+            display: flex;
+            gap: 40px;
+        }
+        .tree-container {
+            position: relative;
+            width: 560px;
+            padding: 30px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 64px);
+            grid-auto-rows: 64px;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .talent-box {
+            width: 64px;
+            height: 64px;
+            text-align: center;
+            background: #1c1c1c;
+            color: white;
+            font-size: 0;
+            border-radius: 6px;
+            border: 2px solid #666;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            position: relative;
+            transition: transform 0.2s ease-in-out;
+        }
+        .talent-box:hover {
+            transform: scale(1.1);
+            z-index: 2;
+        }
+        .talent-box img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            border: 1px solid #000;
+            object-fit: cover;
+        }
+        .talent-box::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: white;
+            white-space: nowrap;
+        }
+        svg.connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        svg line {
+            stroke: #FFD700;
+            stroke-width: 2;
+        }
+    </style>
 </head>
 <body>
     @include('navBar.navBar')
 
-    <h1>Choisissez une classe pour voir ses talents</h1>
-    <select id="class-select" onchange="filterSpecializations()">
-        <option value="">Sélectionnez une classe</option>
+    <h1>Arbre de talents</h1>
+
+    <h2>Choisissez une classe</h2>
+    <select id="class-select" onchange="loadSpecs()">
+        <option value="">-- Classe --</option>
         @foreach ($classes as $class)
             <option value="{{ $class['id'] }}">{{ $class['name'] }}</option>
         @endforeach
     </select>
 
-    <h1>Choisissez une spécialisation</h1>
+    <h2>Choisissez une spécialisation</h2>
     <select id="specialization-select" style="display:none;">
-        <option value="">Sélectionnez une spécialisation</option>
+        <option value="">-- Spécialisation --</option>
     </select>
+    <button onclick="loadTalentTree()">Charger les talents</button>
 
-    <button id="getTalents">Obtenir les talents</button>
-
-    <div id="talentTree">
-        <h2>Arbre de talents :</h2>
-        <div id="talentContainer"></div>
+    <div class="wrapper">
+        <div class="tree-columns">
+            <div class="tree-container" id="specTree">
+                <svg class="connections"></svg>
+                <div class="grid" id="talentGridSpec"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        $(document).ready(function() {
-            $('#getTalents').click(function() {
-                var specializationId = $('#specialization-select').val();
-                
-                if (!specializationId) {
-                    alert("Veuillez sélectionner une spécialisation !");
-                    return;
-                }
+    async function loadSpecs() {
+        const classId = document.getElementById("class-select").value;
+        const specSelect = document.getElementById("specialization-select");
+        specSelect.innerHTML = '<option value="">-- Spécialisation --</option>';
 
-                $.ajax({
-                    url: '/get-talent-tree/' + specializationId,
-                    method: 'GET',
-                    success: function(data) {
-                        let talentHTML = `<h2>Arbre de talents :</h2><div class="talent-grid">`;
-                        if (data.talent_nodes) {
-                            data.talent_nodes.forEach(talent => {
-                                talentHTML += `
-                                    <div class="talent">
-                                        <img src="${talent.talent.icon_url ?? 'https://via.placeholder.com/50'}" 
-                                             alt="${talent.talent.name ?? 'Talent inconnu'}">
-                                        <p class="talent-name" data-desc="${talent.talent.description ?? ''}">
-                                            ${talent.talent.name ?? 'Talent inconnu'}
-                                        </p>
-                                    </div>`;
-                            });
-                        } else {
-                            talentHTML += `<p>Aucun talent trouvé pour cette spécialisation.</p>`;
-                        }
-                        talentHTML += `</div>`;
-                        $('#talentContainer').html(talentHTML);
-                    },
-                    error: function() {
-                        $('#talentContainer').html('Erreur lors de la récupération des talents.');
-                    }
+        if (!classId) return;
+
+        try {
+            const response = await fetch(`/specializations/${classId}`);
+            const data = await response.json();
+
+            if (!Array.isArray(data)) {
+                console.error("Données inattendues reçues pour les spécialisations:", data);
+                return;
+            }
+
+            data.forEach(spec => {
+                specSelect.innerHTML += `<option value="${spec.id}" data-specname="${spec.name.toLowerCase().replace(/ /g, '-')}">${spec.name}</option>`;
+            });
+
+            specSelect.style.display = 'block';
+        } catch (err) {
+            console.error("Erreur lors du chargement des spécialisations:", err);
+        }
+    }
+
+    async function loadTalentTree() {
+        const specSelect = document.getElementById("specialization-select");
+        const specId = specSelect.value;
+        const specName = specSelect.options[specSelect.selectedIndex].dataset.specname;
+        const treeContainer = document.getElementById('specTree');
+        const grid = document.getElementById("talentGridSpec");
+        const svg = document.querySelector("#specTree svg.connections");
+        grid.innerHTML = "Chargement...";
+        svg.innerHTML = "";
+
+        const backgroundImageUrl = `https://images.wowhead.com/images/talent-backgrounds/${specName}.jpg`;
+        treeContainer.style.backgroundImage = `url('${backgroundImageUrl}')`;
+
+        try {
+            const response = await fetch(`/api/talent-tree/${specId}`);
+            const talents = await response.json();
+
+            if (!Array.isArray(talents)) {
+                grid.innerHTML = "Erreur : données talents invalides.";
+                return;
+            }
+
+            grid.innerHTML = "";
+            const nodeMap = {};
+
+            talents.forEach(talent => {
+                const div = document.createElement("div");
+                div.className = "talent-box";
+                div.style.gridColumnStart = talent.column + 1;
+                div.style.gridRowStart = talent.row + 1;
+                div.setAttribute("data-name", talent.name);
+                div.innerHTML = `
+                    <img src="https://render.worldofwarcraft.com/us/icons/56/${talent.icon.replace(/.*\/(.*)\.jpg$/, '$1')}.jpg" alt="${talent.name}">
+                `;
+                grid.appendChild(div);
+                nodeMap[talent.id] = div;
+            });
+
+            talents.forEach(talent => {
+                if (!talent.requires || !talent.requires.length) return;
+                const from = nodeMap[talent.id];
+                const fromX = from.offsetLeft + from.offsetWidth / 2;
+                const fromY = from.offsetTop + from.offsetHeight / 2;
+
+                talent.requires.forEach(reqId => {
+                    const to = nodeMap[reqId];
+                    if (!to) return;
+                    const toX = to.offsetLeft + to.offsetWidth / 2;
+                    const toY = to.offsetTop + to.offsetHeight / 2;
+
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", toX);
+                    line.setAttribute("y1", toY);
+                    line.setAttribute("x2", fromX);
+                    line.setAttribute("y2", fromY);
+                    svg.appendChild(line);
                 });
             });
-        });
+
+        } catch (error) {
+            console.error("Erreur lors du chargement des talents:", error);
+            grid.innerHTML = "Erreur lors de la récupération des talents.";
+        }
+    }
     </script>
-
-    <style>
-        .talent-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .talent {
-            text-align: center;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 8px;
-            background-color: #222;
-            color: white;
-        }
-        .talent img {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-        }
-    </style>
-    <h2>Builds publics</h2>
-
-@foreach($publicBuilds as $build)
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5>{{ $build->sujet }}</h5>
-            <p>{{ $build->description }}</p>
-            <small>Créé par {{ $build->user->name }}</small>
-        </div>
-    </div>
-@endforeach
-
-</body> 
+</body>
 </html>

@@ -6,7 +6,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\BuildController;
-use App\Http\Controllers\TalentController;
+use App\Http\Controllers\TalentTreeController;
 use App\Http\Controllers\SpecializationController;
 
 // Pages publiques
@@ -33,7 +33,7 @@ Route::get('/profile', [UserController::class, 'profile'])->name('app_profile')-
 
 // Gestion des talents & spécialisations
 Route::get('/specializations/{classId}', [SpecializationController::class, 'getSpecializationsByClass']);
-Route::get('/get-talent-tree/{specializationId}', [TalentController::class, 'getTalentTree']);
+Route::get('/get-talent-tree/{specializationId}', [TalentTreeController::class, 'getTalentTree']);
 
 Route::get('/app_builds', [BuildController::class, 'appBuilds'])->name('app_builds');
 
