@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class TalentTreeController extends Controller
@@ -24,6 +25,14 @@ class TalentTreeController extends Controller
 
     private function getSpellMediaUrl($spellId, $accessToken)
     {
+        // Check if the image is already cached in the database.
+        $cachedImage = DB::table('talent_images')->where('spell_id', $spellId)->first();
+
+        if ($cachedImage) {
+            return $cachedImage->image_url;
+        }
+
+        // If not, fetch it from the API.
         $url = "{$this->baseUrl}/data/wow/media/spell/{$spellId}";
         $response = Http::withToken($accessToken)->get($url, [
             'namespace' => $this->namespace,
@@ -34,6 +43,13 @@ class TalentTreeController extends Controller
             $media = $response->json();
             foreach ($media['assets'] ?? [] as $asset) {
                 if ($asset['key'] === 'icon') {
+                    // Cache the image URL in the database.
+                    DB::table('talent_images')->insert([
+                        'spell_id' => $spellId,
+                        'image_url' => $asset['value'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
                     return $asset['value'];
                 }
             }

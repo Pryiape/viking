@@ -35,8 +35,6 @@
                     <li><a class="dropdown-item" href="{{ route('register') }}">Register</a></li>
                 </ul>
             @endguest
-      
-
 
                 @auth
                 <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -44,7 +42,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end"> <!-- Ajout de dropdown-menu-end -->
                     <li><a class="dropdown-item" href="{{ route('app_profile') }}">Profile</a></li>
-                    <li><a class="dropdown-item" href="{{ route('app_builds') }}">Builds</a></li>
+                    <li><a class="dropdown-item" href="{{ route('builds.index') }}">Builds</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form action="{{ route('logout') }}" method="post">

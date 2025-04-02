@@ -19,6 +19,7 @@ class Build extends Model
         'user_id',
         'sujet',
         'description',
+        'is_public',
         'date'
     ];
 

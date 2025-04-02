@@ -11,16 +11,15 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class BuildController extends Controller
 {
     use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $user = Auth::user(); 
-    
-        $myBuilds = \App\Models\Build::where('user_id', $user->id)->latest()->get();
-    
-        return view('build.index', compact('myBuilds'));
+        $myBuilds = Build::where('user_id', $user->id)->latest()->get();
+        return view('builds.index', compact('myBuilds'));
     }
 
     /**
@@ -45,7 +44,7 @@ class BuildController extends Controller
             'sujet' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
-    
+
         Build::create([
             'user_id' => Auth::id(),
             'sujet' => $request->sujet,
@@ -53,7 +52,7 @@ class BuildController extends Controller
             'is_public' => $request->has('is_public'),
         ]);
         
-        return redirect()->route('build.index')->with('success', 'Build créé avec succès.');
+        return redirect()->route('builds.index')->with('success', 'Build créé avec succès.');
     }
 
     /**
@@ -80,21 +79,20 @@ class BuildController extends Controller
     public function update(Request $request, Build $build)
     {
         $this->authorize('update', $build);
-    
+
         $request->validate([
             'sujet' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
-    
+
         $build->update([
             'sujet' => $request->sujet,
             'description' => $request->description,
             'is_public' => $request->has('is_public'),
         ]);
-    
-        return redirect()->route('build.index')->with('success', 'Build mis à jour avec succès!');
+
+        return redirect()->route('builds.index')->with('success', 'Build mis à jour avec succès!');
     }
-    
 
     /**
      * Remove the specified resource from storage.
@@ -114,7 +112,7 @@ class BuildController extends Controller
 
         $build->delete();
 
-        return redirect()->route('build.index')->with('success', 'Build supprimé.');
+        return redirect()->route('builds.index')->with('success', 'Build supprimé.');
     }
 
     /**

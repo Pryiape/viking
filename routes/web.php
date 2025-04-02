@@ -47,3 +47,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/builds/{build}/edit', [BuildController::class, 'edit'])->name('builds.edit');
     Route::put('/builds/{build}', [BuildController::class, 'update'])->name('builds.update');
 });
+Route::resource('builds', BuildController::class);

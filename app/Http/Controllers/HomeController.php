@@ -27,20 +27,23 @@ class HomeController extends Controller
         $firstSpecializationId = $specializationData->data[0]->id ?? null; // Utiliser l'ID de la première spécialisation
         $talentData = $firstSpecializationId ? $this->getTalentTree($firstSpecializationId) : null;
 
-$publicBuilds = \App\Models\Build::where('is_public', true)->latest()->get();
-return view('home.home', [
-    'publicBuilds' => $publicBuilds,
+        // Fetch public builds
+        $publicBuilds = \App\Models\Build::where('is_public', true)->latest()->get();
+        
+        return view('home.home', [
+            'publicBuilds' => $publicBuilds,
             'data' => $data,
             'specializationData' => $specializationData->getData(),
             'classes' => $classes, // Pass classes to the view
             'talentData' => $talentData // Pass talent data to the view
         ]);
     }
+
     public function index()
     {
-    $publicBuilds = \App\Models\Build::where('is_public', true)->latest()->get();
+        $publicBuilds = \App\Models\Build::where('is_public', true)->latest()->get();
 
-    return view('home', compact('publicBuilds'));
+        return view('home', compact('publicBuilds'));
     }
 
     //la page / vue dashboard.blade.php

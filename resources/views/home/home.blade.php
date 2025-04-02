@@ -156,6 +156,29 @@
         .dialog button:hover {
             background: #333;
         }
+        .public-builds {
+            margin-top: 40px;
+        }
+        .build-card {
+            background-color: #1c1c1c;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .build-card h3 {
+            margin-top: 0;
+        }
+        .build-card p {
+            margin-bottom: 10px;
+        }
+        .build-card a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+        .build-card a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -196,6 +219,20 @@
             <div id="dialogChoices"></div>
             <button onclick="closeDialog()">Annuler</button>
         </div>
+    </div>
+
+    <!-- Public Builds Section -->
+    <div class="public-builds">
+        <h2>Public Builds</h2>
+        @forelse($publicBuilds as $build)
+            <div class="build-card">
+                <h3>{{ $build->sujet }}</h3>
+                <p>{{ $build->description }}</p>
+                <a href="{{ route('builds.show', $build) }}">Voir le build</a>
+            </div>
+        @empty
+            <p>Aucun build public disponible.</p>
+        @endforelse
     </div>
 
     <script>
