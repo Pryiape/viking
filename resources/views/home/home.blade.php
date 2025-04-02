@@ -16,11 +16,11 @@
         }
         .wrapper {
             display: flex;
-            justify-content: flex-start; /* Aligner à gauche */
+            justify-content: flex-start;
             align-items: flex-start;
             padding: 20px;
             overflow-x: auto;
-            display: none; /* Masquer par défaut */
+            display: none;
         }
         .tree-columns {
             display: flex;
@@ -32,7 +32,7 @@
             border-radius: 12px;
             background-size: cover;
             background-position: center;
-            background-color: rgba(0, 0, 0, 0.8); /* Ajouter un fond noir */
+            background-color: rgba(0, 0, 0, 0.8);
             box-shadow: none;
         }
         .grid {
@@ -46,19 +46,17 @@
         .talent-box {
             width: 64px;
             height: 64px;
-            text-align: center;
             background: #1c1c1c;
-            color: white;
-            font-size: 0;
             border-radius: 6px;
             border: 2px solid #666;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
             position: relative;
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s;
         }
         .talent-box:hover {
             transform: scale(1.1);
             z-index: 2;
+            box-shadow: 0 0 12px #ffcc00, 0 0 20px #ffaa00 inset;
         }
         .talent-box img {
             width: 100%;
@@ -78,16 +76,20 @@
             white-space: nowrap;
         }
         .tooltip {
-            display: none;
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            position: fixed;
+            background: rgba(0, 0, 0, 0.95);
             color: white;
-            padding: 10px;
-            border-radius: 6px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 10;
-            max-width: 200px;
-            font-size: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            z-index: 999;
+            max-width: 300px;
+            font-size: 13px;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
         }
         svg.connections {
             position: absolute;
@@ -132,7 +134,6 @@
         </div>
     </div>
 
-    <!-- Tooltip pour la description du talent -->
     <div class="tooltip" id="tooltip"></div>
 
     <script>
@@ -169,6 +170,7 @@
         const treeContainer = document.getElementById('specTree');
         const grid = document.getElementById("talentGridSpec");
         const svg = document.querySelector("#specTree svg.connections");
+        const tooltip = document.getElementById("tooltip");
         grid.innerHTML = "Chargement...";
         svg.innerHTML = "";
 
@@ -193,13 +195,22 @@
                 div.style.gridColumnStart = talent.column + 1;
                 div.style.gridRowStart = talent.row + 1;
                 div.setAttribute("data-name", talent.name);
-                div.setAttribute("data-description", talent.description); // Ajouter la description
-                div.innerHTML = `
-                    <img src="${talent.icon}" alt="${talent.name}">
-                `;
-                // Ajouter les événements mouseover et mouseout
-                div.addEventListener('mouseover', (event) => showTooltip(event, talent.description));
-                div.addEventListener('mouseout', hideTooltip);
+                div.innerHTML = `<img src="${talent.icon}" alt="${talent.name}">`;
+
+                div.addEventListener('mouseenter', () => {
+                    tooltip.innerHTML = `<strong>${talent.name}</strong><br>${talent.description}`;
+                    tooltip.style.visibility = 'visible';
+                    tooltip.style.opacity = 1;
+                });
+                div.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = (e.pageX + 12) + 'px';
+                    tooltip.style.top = (e.pageY + 12) + 'px';
+                });
+                div.addEventListener('mouseleave', () => {
+                    tooltip.style.visibility = 'hidden';
+                    tooltip.style.opacity = 0;
+                });
+
                 grid.appendChild(div);
                 nodeMap[talent.id] = div;
             });
@@ -225,25 +236,12 @@
                 });
             });
 
-            document.querySelector('.wrapper').style.display = 'flex'; // Afficher le conteneur des talents
+            document.querySelector('.wrapper').style.display = 'flex';
 
         } catch (error) {
             console.error("Erreur lors du chargement des talents:", error);
             grid.innerHTML = "Erreur lors de la récupération des talents.";
         }
-    }
-
-    function showTooltip(event, description) {
-        const tooltip = document.getElementById("tooltip");
-        tooltip.style.display = 'block';
-        tooltip.style.left = event.pageX + 'px';
-        tooltip.style.top = event.pageY + 'px';
-        tooltip.innerHTML = description;
-    }
-
-    function hideTooltip() {
-        const tooltip = document.getElementById("tooltip");
-        tooltip.style.display = 'none';
     }
     </script>
 </body>
