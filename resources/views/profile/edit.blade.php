@@ -6,21 +6,39 @@
     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
+
+        <!-- Display validation errors -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Profile Picture -->
         <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" name="name" id="name" class="form-control" value="{{ $user->name }}" required>
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ $user->email }}" required>
-        </div>
-        <div class="form-group">
-            <label for="profile_picture">Profile Picture (JPG or PNG)</label>
-            <input type="file" name="profile_picture" id="profile_picture" class="form-control" accept=".jpg, .jpeg, .png">
+            <label for="profile_picture">Profile Picture</label>
+            <input type="file" id="profile_picture" name="profile_picture" class="form-control">
             @if ($user->profile_picture)
-                <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="Profile Picture" class="img-thumbnail mt-2" style="height: 150px;">
+                <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="Profile Picture" class="img-thumbnail mt-2" width="150">
             @endif
         </div>
+
+        <!-- Name -->
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
+        </div>
+
         <button type="submit" class="btn btn-primary">Update Profile</button>
     </form>
 </div>

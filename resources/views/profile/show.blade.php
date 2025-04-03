@@ -18,19 +18,5 @@
             <a href="{{ route('profile.edit') }}" class="btn btn-primary">Edit Profile</a>
         </div>
     </div>
-
-    <h2>Activity Log</h2>
-    @if (!empty($activities) && is_array($activities) || is_object($activities))
-        <ul>
-            @foreach ($activities as $activity)
-                <li>{{ $activity->description }} on {{ $activity->created_at->format('d M Y') }}</li>
-            @endforeach
-        </ul>
-    @else
-        <p>No activities found.</p>
-    @endif
-
-    <h2>Settings</h2>
-    <a href="{{ route('settings') }}" class="btn btn-secondary">Settings</a>
 </div>
 @endsection

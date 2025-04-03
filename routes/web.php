@@ -9,7 +9,6 @@ use App\Http\Controllers\BuildController;
 use App\Http\Controllers\TalentTreeController;
 use App\Http\Controllers\SpecializationController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SettingsController; // Import the SettingsController
 
 // Pages publiques
 Route::get('/', [HomeController::class, 'home'])->name('app_home');
@@ -46,9 +45,5 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
-});
-
-// Settings page
-Route::middleware('auth')->group(function () {
-    Route::get('settings', [SettingsController::class, 'index'])->name('settings'); // Define the settings route
+    Route::get('app_profile', [ProfileController::class, 'show'])->name('app_profile'); // Define the app_profile route
 });
