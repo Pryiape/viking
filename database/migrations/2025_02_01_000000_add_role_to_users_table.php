@@ -4,27 +4,29 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class AddRoleToUsersTableUnique extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Ajoute une colonne "role" avec une valeur par défaut
             $table->string('role')->default('utilisateur');
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Supprime la colonne "role" pour permettre un rollback propre
             $table->dropColumn('role');
         });
     }
-};
+}
