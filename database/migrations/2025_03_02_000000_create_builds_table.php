@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateBuildsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('builds', function (Blueprint $table) {
@@ -23,16 +18,9 @@ class CreateBuildsTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::table('builds', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-        });
+        // Ne drop pas manuellement la foreign key
         Schema::dropIfExists('builds');
     }
 }
