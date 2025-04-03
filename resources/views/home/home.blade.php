@@ -200,7 +200,7 @@
         <option value="">-- Spécialisation --</option>
     </select>
     <button onclick="loadTalentTree()">Charger les talents</button>
-    <button onclick="saveBuild()">Sauvegarder le build</button>
+<!-- Button to save the build has been removed -->
 
     <div class="wrapper">
         <div class="tree-columns">
@@ -399,19 +399,6 @@
     function closeDialog() {
         const dialogOverlay = document.getElementById("dialogOverlay");
         dialogOverlay.style.display = 'none';
-    }
-
-    function saveBuild() {
-        const json = JSON.stringify(selectedTalents);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'mon_build_talent.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
     }
     </script>
 </body>
