@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            // Ajoute une colonne "role" avec une valeur par défaut
             $table->string('role')->default('utilisateur');
         });
-        
     }
 
     /**
@@ -23,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // Supprime la colonne "role" pour permettre un rollback propre
+            $table->dropColumn('role');
         });
     }
 };
