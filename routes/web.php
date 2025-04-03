@@ -8,6 +8,8 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\BuildController;
 use App\Http\Controllers\TalentTreeController;
 use App\Http\Controllers\SpecializationController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController; // Import the SettingsController
 
 // Pages publiques
 Route::get('/', [HomeController::class, 'home'])->name('app_home');
@@ -28,9 +30,6 @@ Route::match(['get', 'post'], '/dashboard', [HomeController::class, 'dashboard']
     ->name('app_dashboard')
     ->middleware('auth');
 
-// Profil utilisateur
-Route::get('/profile', [UserController::class, 'profile'])->name('app_profile')->middleware('auth');
-
 // Gestion des talents & spécialisations
 Route::get('/specializations/{classId}', [SpecializationController::class, 'getSpecializationsByClass']);
 Route::get('/get-talent-tree/{specializationId}', [TalentTreeController::class, 'getTalentTree']);
@@ -40,4 +39,16 @@ Route::get('/app_builds', [BuildController::class, 'appBuilds'])->name('app_buil
 // Routes Builds protégées
 Route::middleware(['auth'])->group(function () {
     Route::resource('builds', BuildController::class);
+});
+
+// Profil utilisateur
+Route::middleware('auth')->group(function () {
+    Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// Settings page
+Route::middleware('auth')->group(function () {
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings'); // Define the settings route
 });
