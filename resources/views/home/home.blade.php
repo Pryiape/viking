@@ -160,7 +160,8 @@
             margin-top: 40px;
         }
         .build-card {
-            background-color: #1c1c1c;
+            background-color: white;
+            color: black;
             border: 1px solid #333;
             border-radius: 12px;
             padding: 20px;

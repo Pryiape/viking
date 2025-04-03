@@ -39,12 +39,5 @@ Route::get('/app_builds', [BuildController::class, 'appBuilds'])->name('app_buil
 
 // Routes Builds protégées
 Route::middleware(['auth'])->group(function () {
-    Route::get('/builds', [BuildController::class, 'index'])->name('build.index');
-    Route::get('/builds/create', [BuildController::class, 'create'])->name('builds.create');
-    Route::post('/builds', [BuildController::class, 'store'])->name('builds.store');
-    Route::delete('/builds/{id}', [BuildController::class, 'destroy'])->name('builds.destroy');
-    Route::get('/builds/{build}', [BuildController::class, 'show'])->name('builds.show');
-    Route::get('/builds/{build}/edit', [BuildController::class, 'edit'])->name('builds.edit');
-    Route::put('/builds/{build}', [BuildController::class, 'update'])->name('builds.update');
+    Route::resource('builds', BuildController::class);
 });
-Route::resource('builds', BuildController::class);
