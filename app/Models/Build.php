@@ -20,7 +20,10 @@ class Build extends Model
         'sujet',
         'description',
         'is_public',
-        'date'
+        'talent_tree', 
+    ];
+    protected $casts = [
+        'talent_tree' => 'array', // Cast talent_tree to array
     ];
 
     /**

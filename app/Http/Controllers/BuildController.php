@@ -27,7 +27,11 @@ class BuildController extends Controller
      */
     public function create()
     {
-        return view('builds.create');
+        $blizzardController = new BlizzardController();
+        $data = $blizzardController->fetchGameData(); // Fetch class data
+        $classes = $data['classes'] ?? []; // Extract classes from the data
+        
+        return view('builds.create', compact('classes'));
     }
 
     /**
@@ -44,12 +48,13 @@ class BuildController extends Controller
             'sujet' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
-
+    
         Build::create([
             'user_id' => Auth::id(),
             'sujet' => $request->sujet,
             'description' => $request->description,
             'is_public' => $request->has('is_public'),
+            'talent_tree' => $request->input('talent_tree'), // Save talent tree JSON
         ]);
         
         return redirect()->route('builds.index')->with('success', 'Build créé avec succès.');
@@ -89,6 +94,7 @@ class BuildController extends Controller
             'sujet' => $request->sujet,
             'description' => $request->description,
             'is_public' => $request->has('is_public'),
+            'talent_tree' => $request->input('talent_tree'), // Update talent tree JSON
         ]);
 
         return redirect()->route('builds.index')->with('success', 'Build mis à jour avec succès!');
