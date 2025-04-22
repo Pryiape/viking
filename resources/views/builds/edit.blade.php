@@ -1,3 +1,8 @@
+{{--
+    Vue Blade pour modifier un build existant.
+    Variables attendues :
+    - $build : instance du build à modifier.
+--}}
 @extends('welcome')
 
 @section('title', 'Modifier le Build')

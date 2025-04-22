@@ -19,6 +19,8 @@
         @yield('content')
     </div>
 
+    @include('components.footer') <!-- Ajout du footer -->
+
     <!-- Bootstrap 5.3 JS (déjà inclus avec Popper.js) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

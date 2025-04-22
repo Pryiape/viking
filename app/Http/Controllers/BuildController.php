@@ -8,12 +8,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+/**
+ * Contrôleur pour gérer les builds des utilisateurs.
+ *
+ * @group Builds
+ * 
+ * Ce contrôleur permet de lister, créer, afficher, modifier et supprimer les builds.
+ * Toutes les actions nécessitent une authentification.
+ */
 class BuildController extends Controller
 {
     use AuthorizesRequests;
 
     /**
-     * Display a listing of the resource.
+     * Affiche la liste des builds de l'utilisateur connecté.
+     *
+     * @authenticated
+     * @response 200 {
+     *  "myBuilds": "Liste des builds de l'utilisateur"
+     * }
      */
     public function index()
     {
@@ -23,7 +36,12 @@ class BuildController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Affiche le formulaire de création d'un nouveau build.
+     *
+     * @authenticated
+     * @response 200 {
+     *  "classes": "Liste des classes disponibles pour le build"
+     * }
      */
     public function create()
     {
@@ -35,13 +53,24 @@ class BuildController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Initialise le middleware d'authentification.
      */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
+    /**
+     * Enregistre un nouveau build en base de données.
+     *
+     * @authenticated
+     * @bodyParam sujet string required Sujet du build. Exemple: "Build DPS"
+     * @bodyParam description string required Description détaillée du build.
+     * @bodyParam is_public boolean Indique si le build est public.
+     * @bodyParam talent_tree json Arbre de talents au format JSON.
+     * 
+     * @response 302 Redirection vers la liste des builds avec message de succès.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -61,7 +90,13 @@ class BuildController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Affiche un build spécifique.
+     *
+     * @authenticated
+     * @urlParam build int required ID du build.
+     * @response 200 {
+     *  "build": "Détails du build"
+     * }
      */
     public function show(Build $build)
     {
@@ -70,7 +105,13 @@ class BuildController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Affiche le formulaire d'édition d'un build.
+     *
+     * @authenticated
+     * @urlParam build int required ID du build.
+     * @response 200 {
+     *  "build": "Détails du build à éditer"
+     * }
      */
     public function edit(Build $build)
     {
@@ -79,7 +120,16 @@ class BuildController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Met à jour un build existant.
+     *
+     * @authenticated
+     * @urlParam build int required ID du build.
+     * @bodyParam sujet string required Sujet du build.
+     * @bodyParam description string required Description détaillée du build.
+     * @bodyParam is_public boolean Indique si le build est public.
+     * @bodyParam talent_tree json Arbre de talents au format JSON.
+     * 
+     * @response 302 Redirection vers la liste des builds avec message de succès.
      */
     public function update(Request $request, Build $build)
     {
@@ -101,7 +151,12 @@ class BuildController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprime un build.
+     *
+     * @authenticated
+     * @urlParam id int required ID du build à supprimer.
+     * @response 302 Redirection vers la liste des builds avec message de succès.
+     * @response 403 Accès refusé si l'utilisateur n'a pas la permission.
      */
     public function destroy($id)
     {
@@ -122,11 +177,14 @@ class BuildController extends Controller
     }
 
     /**
-     * Display a listing of the app builds.
+     * Affiche la liste des builds de l'application.
+     *
+     * @authenticated
+     * @response 200 Vue de la liste des builds de l'application.
      */
     public function appBuilds()
     {
         // Logic to retrieve and display app builds can be added here.
-        return view('builds.app_builds'); // Assuming there is a view for app builds.
+        return view('builds.app_builds'); // Assuming there is une vue pour les builds de l'application.
     }
 }

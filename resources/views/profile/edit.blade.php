@@ -1,3 +1,8 @@
+{{--
+    Vue Blade pour éditer le profil de l'utilisateur.
+    Variables attendues :
+    - $user : instance de l'utilisateur connecté.
+--}}
 @extends('layouts.app')
 
 @section('content')

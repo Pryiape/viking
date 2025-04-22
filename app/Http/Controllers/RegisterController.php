@@ -8,13 +8,35 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * Contrôleur pour gérer l'inscription des utilisateurs.
+ *
+ * @group Inscription
+ * 
+ * Ce contrôleur affiche le formulaire d'inscription et gère la création d'un nouvel utilisateur.
+ */
 class RegisterController extends Controller
 {
+    /**
+     * Affiche le formulaire d'inscription.
+     *
+     * @response 200 Vue du formulaire d'inscription.
+     */
     public function showRegisterForm()
     {
-    return view('auth.register'); // Assure-toi que cette vue existe : resources/views/auth/register.blade.php
+        return view('auth.register'); // Assure-toi que cette vue existe : resources/views/auth/register.blade.php
     }
 
+    /**
+     * Traite l'inscription d'un nouvel utilisateur.
+     *
+     * @bodyParam Username string required Nom d'utilisateur (lettres uniquement).
+     * @bodyParam email string required Adresse email unique.
+     * @bodyParam password string required Mot de passe (min 12 caractères, majuscule, minuscule, chiffre, confirmation).
+     * 
+     * @response 302 Redirection vers la page d'accueil après inscription réussie.
+     * @response 422 Validation échouée.
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -1,3 +1,8 @@
+{{--
+    Vue Blade pour afficher la liste des builds de l'utilisateur.
+    Variables attendues :
+    - $myBuilds : Collection des builds de l'utilisateur connecté.
+--}}
 @extends('welcome')
 
 @section('title', 'Mes Builds')
