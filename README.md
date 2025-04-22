@@ -1,57 +1,91 @@
-Viking
-Viking est un projet web développé principalement en CSS, PHP, Blade et JavaScript.
+# Viking Violet
 
-## Aperçu du Projet
-Viking est conçu pour offrir une plateforme robuste et flexible pour le développement d'applications web. Il vise à simplifier le processus de création d'applications en fournissant des outils et des fonctionnalités puissants.
+Viking Violet est une application Laravel qui permet aux utilisateurs de créer, sauvegarder et explorer des builds de talents pour les classes de World of Warcraft via l’API officielle de Blizzard (Battle.net).
 
-## Composition des Langages
-CSS: 81%
-PHP: 14.5%
-Blade: 3.1%
-JavaScript: 1.4%    
+---
 
-## Installation
-Pour installer le projet Viking, suivez les étapes suivantes :
+## 🚀 Fonctionnalités
 
-1. Clonez le dépôt :
-   ```bash
-   git clone https://github.com/Pryiape/viking.git
-   ```
-2. Installez les dépendances :
-   ```bash
-   composer install
-   npm install
-   ```
+- Authentification et gestion de comptes
+- Création et gestion de builds de talents
+- Connexion à l'API Battle.net pour récupérer classes, spécialisations et talents
+- Interface moderne avec Bootstrap 5
+- Sauvegarde des données en base MySQL
 
-## Utilisation
-Pour lancer le projet en local :
+---
 
-1. Compilez les assets :
-   ```bash
-   npm run dev
-   ```
-2. Démarrez le serveur :
-   ```bash
-   php artisan serve
-   ```
+## 🛠️ Installation
 
-## Fonctionnalités
-- Moteur de routage simple et rapide
-- Conteneur d'injection de dépendances puissant
-- Prise en charge de plusieurs back-ends pour le stockage de session et de cache
-- ORM de base de données intuitif et expressif
-- Migrations de schéma agnostiques de la base de données
-- Traitement des tâches en arrière-plan robuste
-- Diffusion d'événements en temps réel
+1. **Cloner le dépôt :**
 
-## Contribuer
-Merci de considérer une contribution au projet Viking ! Vous pouvez trouver le guide de contribution dans la documentation du projet.
+```bash
+git clone https://github.com/Pryiape/viking.git
+cd viking
 
-## Code de Conduite
-Pour assurer que la communauté Viking soit accueillante pour tous, merci de lire et respecter notre Code de Conduite.
+Installer les dépendances PHP et JS :
+composer install
+npm install && npm run dev
 
-## Vulnérabilités de Sécurité
-Si vous découvrez une vulnérabilité de sécurité dans Viking, merci d'envoyer un e-mail à bernardlereceveur@gmail.com. Toutes les vulnérabilités de sécurité seront traitées rapidement.
+Créer le fichier .env à partir de l’exemple :
+cp .env.example .env
+Générer la clé d’application :
+php artisan key:generate
+Configurer la base de données dans .env :
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=viking
+DB_USERNAME=viking
+DB_PASSWORD=viking_password
 
-## Licence
-Le projet Viking est un logiciel open-source sous licence MIT.
+Lancer les migrations :
+php artisan migrate
+
+Démarrer le serveur local :
+php artisan serve
+L’application sera disponible sur http://localhost:8000
+
+⚙️ Configuration .env
+Voici les clés principales à configurer dans le fichier .env :
+APP_NAME="Viking Violet"
+APP_URL=http://localhost
+
+# Informations de connexion à la base de données
+DB_DATABASE=viking
+DB_USERNAME=viking
+DB_PASSWORD=viking_password
+
+# Blizzard API
+BLIZZARD_CLIENT_ID=ton_client_id
+BLIZZARD_CLIENT_SECRET=ton_client_secret
+BLIZZARD_API_URL=https://oauth.battle.net/token
+BATTLENET_REGION=eu
+
+
+🧙 Intégration avec l’API Blizzard (Battle.net)
+Étapes pour obtenir un compte développeur :
+Crée un compte Blizzard sur https://www.battle.net/
+
+Connecte-toi au Blizzard Developer Portal
+
+Crée une application pour obtenir :
+
+Client ID
+
+Client Secret
+
+Ajoute ces identifiants dans ton fichier .env
+BLIZZARD_CLIENT_ID=exemple123
+BLIZZARD_CLIENT_SECRET=secretABC
+
+L’URL d’authentification utilisée par l’app est :
+https://oauth.battle.net/token
+Tu peux aussi tester l’API manuellement avec Postman ou curl.
+
+✅ À faire
+Amélioration du système de recherche
+
+Pagination et filtrage des builds
+
+🧾 Licence
+Ce projet est open-source et libre d’utilisation dans un cadre personnel ou éducatif.
