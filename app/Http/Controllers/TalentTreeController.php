@@ -44,12 +44,14 @@ class TalentTreeController extends Controller
             foreach ($media['assets'] ?? [] as $asset) {
                 if ($asset['key'] === 'icon') {
                     // Cache the image URL in the database.
-                    DB::table('talent_images')->insert([
-                        'spell_id' => $spellId,
-                        'image_url' => $asset['value'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                    DB::table('talent_images')->updateOrInsert(
+                        ['spell_id' => $spellId],
+                        [
+                            'image_url' => $asset['value'],
+                            'updated_at' => now(),
+                            'created_at' => now(),
+                        ]
+                    );
                     return $asset['value'];
                 }
             }
