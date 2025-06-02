@@ -63,87 +63,107 @@ class TalentTreeController extends Controller
 
     public function fetchTalentTree($specId)
     {
-        set_time_limit(120);
-        $accessToken = $this->getAccessToken();
-        if (!$accessToken) return response()->json(['error' => 'Token Blizzard manquant'], 500);
-
-        $specDataResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/playable-specialization/{$specId}", [
-            'namespace' => $this->namespace,
-            'locale' => $this->locale,
-        ]);
-
-        if ($specDataResponse->failed()) {
-            return response()->json(['error' => 'Erreur récupération spécialisation'], 500);
-        }
-
-        $specData = $specDataResponse->json();
-        $treeHref = $specData['spec_talent_tree']['key']['href'] ?? null;
-
-        if (!$treeHref || !preg_match('/talent-tree\/(\d+)/', $treeHref, $match)) {
-            return response()->json(['error' => 'Aucun treeId trouvé.'], 404);
-        }
-
-        $treeId = $match[1];
-
-        $treeResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/talent-tree/{$treeId}/playable-specialization/{$specId}", [
-            'namespace' => $this->namespace,
-            'locale' => $this->locale,
-        ]);
-
-        if ($treeResponse->failed()) {
-            return response()->json(['error' => 'Erreur récupération arbre de talents'], 500);
-        }
-
-        $treeJson = $treeResponse->json();
-        $nodes = array_merge(
-            $treeJson['class_talent_nodes'] ?? [],
-            $treeJson['spec_talent_nodes'] ?? []
-        );
-
-        $talents = [];
-        foreach ($nodes as $node) {
-            $entry = [
-                'id' => $node['id'],
-                'row' => $node['display_row'] ?? 0,
-                'column' => $node['display_col'] ?? 0,
-                'requires' => array_column($node['requirements'] ?? [], 'required_node_id'),
-                'name' => '',
-                'description' => '',
-                'icon' => '',
-                'choices' => []
-            ];
-
-            if ($node['node_type']['type'] === 'CHOICE' && isset($node['ranks'])) {
-                foreach ($node['ranks'] as $rank) {
-                    $tooltip = $rank['tooltip']['spell_tooltip'] ?? null;
-                    $spell = $tooltip['spell'] ?? null;
-                    $spellId = $spell['id'] ?? null;
-                    $icon = $spellId ? $this->getSpellMediaUrl($spellId, $accessToken) : '';
-                    if ($spell && $tooltip) {
-                        $entry['choices'][] = [
-                            'name' => $spell['name'] ?? '',
-                            'description' => $tooltip['description'] ?? '',
-                            'icon' => $icon
-                        ];
-                    }
-                }
-            } elseif (!empty($node['ranks'])) {
-                foreach ($node['ranks'] as $rank) {
-                    $tooltip = $rank['tooltip']['spell_tooltip'] ?? null;
-                    $spell = $tooltip['spell'] ?? null;
-                    if ($spell && $tooltip) {
-                        $spellId = $spell['id'] ?? null;
-                        $entry['name'] = $spell['name'] ?? '';
-                        $entry['description'] = $tooltip['description'] ?? '';
-                        $entry['icon'] = $spellId ? $this->getSpellMediaUrl($spellId, $accessToken) : '';
-                        break;
-                    }
-                }
+        try {
+            set_time_limit(120);
+            $accessToken = $this->getAccessToken();
+            if (!$accessToken) {
+                \Log::error("Token Blizzard manquant pour specId: $specId");
+                return response()->json(['error' => 'Token Blizzard manquant'], 500);
             }
-
-            $talents[] = $entry;
+    
+            $specDataResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/playable-specialization/{$specId}", [
+                'namespace' => $this->namespace,
+                'locale' => $this->locale,
+            ]);
+    
+            if ($specDataResponse->failed()) {
+                \Log::error("Erreur récupération spécialisation pour specId: $specId", [
+                    'response' => $specDataResponse->body()
+                ]);
+                return response()->json(['error' => 'Erreur récupération spécialisation'], 500);
+            }
+    
+            $specData = $specDataResponse->json();
+            $treeHref = $specData['spec_talent_tree']['key']['href'] ?? null;
+    
+            if (!$treeHref || !preg_match('/talent-tree\/(\d+)/', $treeHref, $match)) {
+                \Log::error("Aucun treeId trouvé dans la réponse pour specId: $specId", [
+                    'response' => $specData
+                ]);
+                return response()->json(['error' => 'Aucun treeId trouvé.'], 404);
+            }
+    
+            $treeId = $match[1];
+    
+            $treeResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/talent-tree/{$treeId}/playable-specialization/{$specId}", [
+                'namespace' => $this->namespace,
+                'locale' => $this->locale,
+            ]);
+    
+            if ($treeResponse->failed()) {
+                \Log::error("Erreur récupération arbre de talents pour treeId: $treeId", [
+                    'response' => $treeResponse->body()
+                ]);
+                return response()->json(['error' => 'Erreur récupération arbre de talents'], 500);
+            }
+    
+            $treeJson = $treeResponse->json();
+            $nodes = array_merge(
+                $treeJson['class_talent_nodes'] ?? [],
+                $treeJson['spec_talent_nodes'] ?? []
+            );
+    
+            $talents = [];
+            foreach ($nodes as $node) {
+                $entry = [
+                    'id' => $node['id'],
+                    'row' => $node['display_row'] ?? 0,
+                    'column' => $node['display_col'] ?? 0,
+                    'requires' => array_column($node['requirements'] ?? [], 'required_node_id'),
+                    'name' => '',
+                    'description' => '',
+                    'icon' => '',
+                    'choices' => []
+                ];
+    
+                if ($node['node_type']['type'] === 'CHOICE' && isset($node['ranks'])) {
+                    foreach ($node['ranks'] as $rank) {
+                        $tooltip = $rank['tooltip']['spell_tooltip'] ?? null;
+                        $spell = $tooltip['spell'] ?? null;
+                        $spellId = $spell['id'] ?? null;
+                        $icon = $spellId ? $this->getSpellMediaUrl($spellId, $accessToken) : '';
+                        if ($spell && $tooltip) {
+                            $entry['choices'][] = [
+                                'name' => $spell['name'] ?? '',
+                                'description' => $tooltip['description'] ?? '',
+                                'icon' => $icon
+                            ];
+                        }
+                    }
+                } elseif (!empty($node['ranks'])) {
+                    foreach ($node['ranks'] as $rank) {
+                        $tooltip = $rank['tooltip']['spell_tooltip'] ?? null;
+                        $spell = $tooltip['spell'] ?? null;
+                        if ($spell && $tooltip) {
+                            $spellId = $spell['id'] ?? null;
+                            $entry['name'] = $spell['name'] ?? '';
+                            $entry['description'] = $tooltip['description'] ?? '';
+                            $entry['icon'] = $spellId ? $this->getSpellMediaUrl($spellId, $accessToken) : '';
+                            break;
+                        }
+                    }
+                }
+    
+                $talents[] = $entry;
+            }
+    
+            return response()->json($talents);
+        } catch (\Throwable $e) {
+            \Log::error("Erreur dans fetchTalentTree pour specId $specId : " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Erreur interne serveur'], 500);
         }
-
-        return response()->json($talents);
     }
+    
 }
