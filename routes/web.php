@@ -47,3 +47,6 @@ Route::middleware('auth')->group(function () {
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('app_profile', [ProfileController::class, 'show'])->name('app_profile'); // Define the app_profile route
 });
+Route::get('/legal', function () {
+    return view('legal'); // attention : fichier resources/views/legal.blade.php requis
+})->name('legal');
