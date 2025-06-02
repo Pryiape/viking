@@ -1,7 +1,7 @@
 {{--
     Vue Blade pour la page de connexion utilisateur.
 --}}
-@extends('welcome')
+@extends('layouts.app')
 
 @section('title', 'Connexion')
 

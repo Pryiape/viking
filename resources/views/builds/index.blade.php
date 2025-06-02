@@ -3,7 +3,7 @@
     Variables attendues :
     - $myBuilds : Collection des builds de l'utilisateur connecté.
 --}}
-@extends('welcome')
+@extends('layouts.app')
 
 @section('title', 'Mes Builds')
 

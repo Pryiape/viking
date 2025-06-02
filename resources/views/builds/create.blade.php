@@ -3,7 +3,7 @@
     Variables attendues :
     - $classes : tableau des classes disponibles pour la sélection.
 --}}
-@extends('welcome')
+@extends('layouts.app')
 
 @section('title', 'Créer un Build')
 

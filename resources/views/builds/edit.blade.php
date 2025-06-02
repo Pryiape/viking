@@ -3,7 +3,7 @@
     Variables attendues :
     - $build : instance du build à modifier.
 --}}
-@extends('welcome')
+@extends('layouts.app')
 
 @section('title', 'Modifier le Build')
 
