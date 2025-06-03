@@ -10,11 +10,11 @@ class TalentTreeController extends Controller
 {
     private $namespace = 'static-eu';
     private $locale = 'fr_FR';
-    private $baseUrl = 'https://us.api.blizzard.com';
+    private $baseUrl = 'https://eu.api.blizzard.com';
 
     private function getAccessToken()
     {
-        $url = 'https://oauth.battle.net/token';
+        $url = 'https://eu.battle.net/oauth/token'; // ✅ Correct pour les appels EU
         $response = Http::asForm()->post($url, [
             'grant_type' => 'client_credentials',
             'client_id' => env('BLIZZARD_CLIENT_ID'),
@@ -22,6 +22,7 @@ class TalentTreeController extends Controller
         ]);
         return $response->successful() ? $response->json()['access_token'] : null;
     }
+    
 
     private function getSpellMediaUrl($spellId, $accessToken)
     {
