@@ -61,15 +61,11 @@ class TalentTreeController extends Controller
         return null;
     }
 
-  public function fetchTalentTree($specId)
-{
-    try {
+    public function fetchTalentTree($specId)
+    {
         set_time_limit(120);
         $accessToken = $this->getAccessToken();
-        if (!$accessToken) {
-            \Log::error("Token Blizzard manquant pour specId: $specId");
-            return response()->json(['error' => 'Token Blizzard manquant'], 500);
-        }
+        if (!$accessToken) return response()->json(['error' => 'Token Blizzard manquant'], 500);
 
         $specDataResponse = Http::withToken($accessToken)->get("{$this->baseUrl}/data/wow/playable-specialization/{$specId}", [
             'namespace' => $this->namespace,
@@ -77,9 +73,6 @@ class TalentTreeController extends Controller
         ]);
 
         if ($specDataResponse->failed()) {
-            \Log::error("Erreur récupération spécialisation pour specId: $specId", [
-                'response' => $specDataResponse->body()
-            ]);
             return response()->json(['error' => 'Erreur récupération spécialisation'], 500);
         }
 
@@ -87,9 +80,6 @@ class TalentTreeController extends Controller
         $treeHref = $specData['spec_talent_tree']['key']['href'] ?? null;
 
         if (!$treeHref || !preg_match('/talent-tree\/(\d+)/', $treeHref, $match)) {
-            \Log::error("Aucun treeId trouvé dans la réponse pour specId: $specId", [
-                'response' => $specData
-            ]);
             return response()->json(['error' => 'Aucun treeId trouvé.'], 404);
         }
 
@@ -101,9 +91,6 @@ class TalentTreeController extends Controller
         ]);
 
         if ($treeResponse->failed()) {
-            \Log::error("Erreur récupération arbre de talents pour treeId: $treeId", [
-                'response' => $treeResponse->body()
-            ]);
             return response()->json(['error' => 'Erreur récupération arbre de talents'], 500);
         }
 
@@ -158,12 +145,5 @@ class TalentTreeController extends Controller
         }
 
         return response()->json($talents);
-    } catch (\Throwable $e) {
-        \Log::error("Erreur dans fetchTalentTree pour specId $specId : " . $e->getMessage(), [
-            'trace' => $e->getTraceAsString()
-        ]);
-        return response()->json(['error' => 'Erreur interne serveur'], 500);
     }
-}
-
 }
