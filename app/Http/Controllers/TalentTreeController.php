@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 class TalentTreeController extends Controller
 {
-    private $namespace = 'static-11.1.0_59095-us';
+    private $namespace = 'static-eu';
     private $locale = 'fr_FR';
     private $baseUrl = 'https://us.api.blizzard.com';
 
