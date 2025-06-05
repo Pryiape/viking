@@ -69,35 +69,35 @@ class SpecializationController extends Controller
     public function getSpecializationsByClass($classId)
     {
         $classSpecializations = [
-            1 => [71, 72, 73], // Guerrier
-            2 => [65, 66, 70], // Paladin
-            3 => [253, 254, 255], // Chasseur
-            4 => [259, 260, 261], // Voleur
-            5 => [256, 257, 258], // Prêtre
-            6 => [250, 251, 252], // DK
-            7 => [262, 263, 264], // Chaman
-            8 => [62, 63, 64], // Mage
-            9 => [265, 266, 267], // Démoniste
-            10 => [268, 269, 270], // Moine
+            1 => [71, 72, 73],       // Guerrier
+            2 => [65, 66, 70],       // Paladin
+            3 => [253, 254, 255],    // Chasseur
+            4 => [259, 260, 261],    // Voleur
+            5 => [256, 257, 258],    // Prêtre
+            6 => [250, 251, 252],    // Chevalier de la mort
+            7 => [262, 263, 264],    // Chaman
+            8 => [62, 63, 64],       // Mage
+            9 => [265, 266, 267],    // Démoniste
+            10 => [268, 269, 270],   // Moine
             11 => [102, 103, 104, 105], // Druide
-            12 => [577, 581], // DH
-            13 => [1467, 1468, 1473], // Evocateur
+            12 => [577, 581],        // Chasseur de démons
+            13 => [1467, 1468, 1473],// Évocateur
         ];
     
         $specNames = [
-            71 => 'Arms', 72 => 'Fury', 73 => 'Protection',
-            65 => 'Holy', 66 => 'Protection', 70 => 'Retribution',
-            253 => 'Beast Mastery', 254 => 'Marksmanship', 255 => 'Survival',
-            259 => 'Assassination', 260 => 'Outlaw', 261 => 'Subtlety',
-            256 => 'Discipline', 257 => 'Holy', 258 => 'Shadow',
-            250 => 'Blood', 251 => 'Frost', 252 => 'Unholy',
-            262 => 'Elemental', 263 => 'Enhancement', 264 => 'Restoration',
-            62 => 'Arcane', 63 => 'Fire', 64 => 'Frost',
-            265 => 'Affliction', 266 => 'Demonology', 267 => 'Destruction',
-            268 => 'Brewmaster', 269 => 'Windwalker', 270 => 'Mistweaver',
-            577 => 'Havoc', 581 => 'Vengeance',
-            1467 => 'Devastation', 1468 => 'Preservation', 1473 => 'Augmentation',
-            102 => 'Balance', 103 => 'Feral', 104 => 'Guardian', 105 => 'Restoration',
+            71 => 'Armes', 72 => 'Fureur', 73 => 'Protection',
+            65 => 'Sacré', 66 => 'Protection', 70 => 'Vindicte',
+            253 => 'Maîtrise des bêtes', 254 => 'Précision', 255 => 'Survie',
+            259 => 'Assassinat', 260 => 'Hors-la-loi', 261 => 'Finesse',
+            256 => 'Discipline', 257 => 'Sacré', 258 => 'Ombre',
+            250 => 'Sang', 251 => 'Givre', 252 => 'Impie',
+            262 => 'Élémentaire', 263 => 'Amélioration', 264 => 'Restauration',
+            62 => 'Arcanes', 63 => 'Feu', 64 => 'Givre',
+            265 => 'Affliction', 266 => 'Démonologie', 267 => 'Destruction',
+            268 => 'Maître brasseur', 269 => 'Marche-vent', 270 => 'Tisse-brume',
+            577 => 'Dévastation', 581 => 'Vengeance',
+            1467 => 'Dévastation', 1468 => 'Préservation', 1473 => 'Augmentation',
+            102 => 'Équilibre', 103 => 'Farouche', 104 => 'Gardien', 105 => 'Restauration',
         ];
     
         if (!isset($classSpecializations[$classId])) {

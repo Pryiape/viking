@@ -401,5 +401,7 @@
         dialogOverlay.style.display = 'none';
     }
     </script>
+        {{-- Inclusion du pied de page --}}
+        @include('components.footer')
 </body>
 </html>

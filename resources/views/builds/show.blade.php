@@ -1,3 +1,8 @@
+{{--
+    Vue Blade pour afficher les détails d'un build.
+    Variables attendues :
+    - $build : instance du build à afficher.
+--}}
 @extends('layouts.app')
 
 @section('content')

@@ -1,4 +1,9 @@
-@extends('welcome')
+{{--
+    Vue Blade pour afficher la liste des builds de l'utilisateur.
+    Variables attendues :
+    - $myBuilds : Collection des builds de l'utilisateur connecté.
+--}}
+@extends('layouts.app')
 
 @section('title', 'Mes Builds')
 

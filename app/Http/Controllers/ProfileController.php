@@ -7,10 +7,24 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage; // Import the Storage facade
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * Contrôleur pour gérer le profil utilisateur.
+ *
+ * @group Profil Utilisateur
+ * 
+ * Ce contrôleur permet d'afficher, modifier et mettre à jour le profil de l'utilisateur connecté.
+ * Toutes les actions nécessitent une authentification.
+ */
 class ProfileController extends Controller
 {
     /**
-     * Show the user profile.
+     * Affiche le profil de l'utilisateur connecté.
+     *
+     * @authenticated
+     * @response 200 {
+     *  "user": "Détails de l'utilisateur",
+     *  "activities": "Activités récentes de l'utilisateur"
+     * }
      */
     public function show()
     {
@@ -20,7 +34,12 @@ class ProfileController extends Controller
     }
 
     /**
-     * Show the form for editing the profile.
+     * Affiche le formulaire d'édition du profil.
+     *
+     * @authenticated
+     * @response 200 {
+     *  "user": "Détails de l'utilisateur à éditer"
+     * }
      */
     public function edit()
     {
@@ -29,7 +48,15 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user profile.
+     * Met à jour le profil de l'utilisateur.
+     *
+     * @authenticated
+     * @bodyParam name string required Nom complet de l'utilisateur.
+     * @bodyParam email string required Adresse email unique.
+     * @bodyParam profile_picture file Image de profil (jpeg, png, max 2MB).
+     * 
+     * @response 302 Redirection vers la page de profil avec message de succès.
+     * @response 422 Validation échouée.
      */
     public function update(Request $request)
     {
@@ -62,6 +89,6 @@ class ProfileController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('profile.show')->with('success', 'Profile updated successfully.');
+        return redirect()->route('profile.show')->with('success', 'Profil mis à jour avec succès.');
     }
 }

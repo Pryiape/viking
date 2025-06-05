@@ -1,4 +1,9 @@
-@extends('welcome')
+{{--
+    Vue Blade pour créer un nouveau build.
+    Variables attendues :
+    - $classes : tableau des classes disponibles pour la sélection.
+--}}
+@extends('layouts.app')
 
 @section('title', 'Créer un Build')
 

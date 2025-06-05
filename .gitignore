@@ -19,3 +19,9 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+*.exe
+*.zip
+*.tar
+*.iso
+*.dmg
+/.scribe

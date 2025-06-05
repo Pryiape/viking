@@ -1,4 +1,11 @@
 <?php return array (
+  'knuckleswtf/scribe' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Knuckles\\Scribe\\ScribeServiceProvider',
+    ),
+  ),
   'laravel/fortify' => 
   array (
     'providers' => 

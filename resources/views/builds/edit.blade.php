@@ -1,4 +1,9 @@
-@extends('welcome')
+{{--
+    Vue Blade pour modifier un build existant.
+    Variables attendues :
+    - $build : instance du build à modifier.
+--}}
+@extends('layouts.app')
 
 @section('title', 'Modifier le Build')
 

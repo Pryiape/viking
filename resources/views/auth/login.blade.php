@@ -1,4 +1,7 @@
-@extends('welcome')
+{{--
+    Vue Blade pour la page de connexion utilisateur.
+--}}
+@extends('layouts.app')
 
 @section('title', 'Connexion')
 
