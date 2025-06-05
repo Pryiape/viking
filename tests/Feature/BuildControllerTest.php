@@ -14,9 +14,9 @@ class BuildControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Create a user and authenticate
-        $user = User::factory()->create();
-        $this->actingAs($user);
+    $this->artisan('migrate');
+    $user = User::factory()->create();
+    $this->actingAs($user);
     }
 
     public function test_name_exceeding_100_characters_transfers_to_description()
