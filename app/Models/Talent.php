@@ -15,5 +15,11 @@ class Talent extends Model
         'specialization_id',
     ];
 
-    // Ajoutez d'autres méthodes ou relations si nécessaire
+    /**
+     * The builds that belong to the talent.
+     */
+    public function builds()
+    {
+        return $this->belongsToMany(Build::class, 'build_talent');
+    }
 }

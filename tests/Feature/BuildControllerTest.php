@@ -80,4 +80,17 @@ class BuildControllerTest extends TestCase
             'description' => 'pas d\'information ' . now()->format('d/m/Y')
         ]);
     }
+
+    public function test_build_can_have_many_talents()
+    {
+        $build = Build::factory()->create();
+        $talent1 = \App\Models\Talent::factory()->create();
+        $talent2 = \App\Models\Talent::factory()->create();
+
+        $build->talents()->attach([$talent1->id, $talent2->id]);
+
+        $this->assertCount(2, $build->talents);
+        $this->assertTrue($build->talents->contains($talent1));
+        $this->assertTrue($build->talents->contains($talent2));
+    }
 }

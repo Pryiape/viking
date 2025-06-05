@@ -20,18 +20,22 @@ class Build extends Model
         'sujet',
         'description',
         'is_public',
-        'talent_tree', 
+        // 'talent_tree', // Removed since we use many-to-many relation now
     ];
-    protected $casts = [
-        'talent_tree' => 'array', // Cast talent_tree to array
-    ];
+
+    /**
+     * The talents that belong to the build.
+     */
+    public function talents()
+    {
+        return $this->belongsToMany(Talent::class, 'build_talent');
+    }
 
     /**
      * Get the user that owns the build.
      */
     public function user()
     {
-
         return $this->belongsTo(User::class);
     }
 }

@@ -25,12 +25,19 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
     
-        // Supprimer d’abord builds si elle existe
+        // Supprimer d'abord les tables dépendantes
+        Schema::dropIfExists('build_talent');
         Schema::dropIfExists('builds');
+        Schema::dropIfExists('permission_user');
+        Schema::dropIfExists('permissions');
+        Schema::dropIfExists('specialization_user');
+        Schema::dropIfExists('specializations');
+        Schema::dropIfExists('talents');
+        Schema::dropIfExists('classes');
     
-        // Ensuite seulement on supprime users
+        // Ensuite seulement users
         Schema::dropIfExists('users');
     
         Schema::enableForeignKeyConstraints();
     }
-};
+};  
