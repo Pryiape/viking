@@ -22,4 +22,12 @@ class Talent extends Model
     {
         return $this->belongsToMany(Build::class, 'build_talent');
     }
+
+    /**
+     * Get the specialization that owns the talent.
+     */
+    public function specialization()
+    {
+        return $this->belongsTo(Specialization::class);
+    }
 }

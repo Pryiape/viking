@@ -92,5 +92,12 @@ class BuildControllerTest extends TestCase
         $this->assertCount(2, $build->talents);
         $this->assertTrue($build->talents->contains($talent1));
         $this->assertTrue($build->talents->contains($talent2));
+
+        // Vérification des noms de classe et spécialisation liés aux talents
+        foreach ($build->talents as $talent) {
+            $specialization = $talent->specialization;
+            $class = $specialization ? $specialization->class : null;
+            echo "Talent: {$talent->name}, Specialization: " . ($specialization ? $specialization->name : 'N/A') . ", Class: " . ($class ? $class->name : 'N/A') . PHP_EOL;
+        }
     }
 }

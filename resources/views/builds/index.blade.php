@@ -29,6 +29,17 @@
                             @endif
                         </div>
 
+                        <h6>Talents associés :</h6>
+                        <ul>
+                            @foreach($build->talents as $talent)
+                                <li>
+                                    {{ $talent->name }} -
+                                    Spécialisation: {{ $talent->specialization ? $talent->specialization->name : 'N/A' }} -
+                                    Classe: {{ $talent->specialization && $talent->specialization->class ? $talent->specialization->class->name : 'N/A' }}
+                                </li>
+                            @endforeach
+                        </ul>
+
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('builds.edit', $build) }}" class="btn btn-sm btn-primary">Modifier</a>
 

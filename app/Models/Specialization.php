@@ -15,5 +15,11 @@ class Specialization extends Model
         'class_id',
     ];
 
-    // Ajoutez d'autres méthodes ou relations si nécessaire
+    /**
+     * Get the class that owns the specialization.
+     */
+    public function class()
+    {
+        return $this->belongsTo(Classes::class);
+    }
 }
